@@ -86,3 +86,11 @@ $string['short_critical'] = 'Riesgo alto';
 $string['short_never'] = 'Sin acceso';
 $string['short_grace'] = 'En gracia / fuera de fechas';
 $string['short_completed'] = 'Completados';
+
+$string['coursepulse:viewoverview'] = 'Ver panel por categoría fuera de los cursos';
+$string['coursepulse:viewstudents'] = 'Ver datos y detalle individual de estudiantes';
+$string['overview'] = 'CoursePulse: panel por categoría';
+$string['overviewscope'] = 'Incluye los cursos autorizados de esta categoría y sus subcategorías. Las tarjetas y la gráfica resumen solo la página actual (hasta 25 cursos). Se cuentan matrículas: un estudiante en dos cursos cuenta dos veces. Los cursos que requieren seleccionar un grupo quedan fuera de estos totales. Los tiempos estimados y detalles individuales se consultan en el reporte de cada curso autorizado.';
+$string['choosegroup'] = 'Abrir reporte y seleccionar un grupo autorizado';
+$string['followup'] = 'Matrículas que requieren seguimiento por curso';
+$string['noauthorisedcourses'] = 'No hay cursos autorizados en esta categoría.';

@@ -17,14 +17,28 @@ require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->libdir . '/csvlib.class.php');
 require_once($CFG->dirroot . '/group/lib.php');
 
-$id = required_param('id', PARAM_INT);
+$id = optional_param('id', 0, PARAM_INT);
+if (!$id) {
+    redirect(new moodle_url('/report/coursepulse/overview.php'));
+}
 $course = get_course($id);
-require_login($course);
+// Report-only category roles need no course enrolment or course content access.
+require_login();
+if (isguestuser()) {
+    throw new moodle_exception('noguest');
+}
 $context = context_course::instance($id);
 require_capability('report/coursepulse:view', $context);
+if (!$course->visible) {
+    require_capability('moodle/course:viewhiddencourses', $context);
+}
 $group = groups_get_course_group($course, true);
 $page = max(0, optional_param('page', 0, PARAM_INT));
 $userid = max(0, optional_param('userid', 0, PARAM_INT));
+$viewstudents = has_capability('report/coursepulse:viewstudents', $context);
+if ($userid) {
+    require_capability('report/coursepulse:viewstudents', $context);
+}
 $risk = optional_param('risk', '', PARAM_ALPHA);
 $search = trim(optional_param('search', '', PARAM_TEXT));
 $export = optional_param('export', false, PARAM_BOOL);
@@ -34,6 +48,7 @@ if (!in_array($exportformat, ['csv', 'xlsx'], true)) {
 }
 if ($export) {
     require_capability('report/coursepulse:export', $context);
+    require_capability('report/coursepulse:viewstudents', $context);
     require_sesskey();
 }
 $today = usergetmidnight(time());
@@ -44,8 +59,11 @@ $risks = ['' => get_string('all')];
 foreach (['active', 'warning', 'critical', 'never', 'grace', 'completed'] as $key) {
     $risks[$key] = get_string('risk_' . $key, 'report_coursepulse');
 }
-if (!array_key_exists($risk, $risks)) {
+if (!$viewstudents || !array_key_exists($risk, $risks)) {
     $risk = '';
+}
+if (!$viewstudents) {
+    $search = '';
 }
 $params = ['id' => $id, 'group' => $group, 'from' => $from, 'to' => $to, 'risk' => $risk, 'search' => $search];
 $url = new moodle_url('/report/coursepulse/index.php', $params);
@@ -55,12 +73,12 @@ $PAGE->set_pagelayout('report');
 $PAGE->set_title(get_string('pluginname', 'report_coursepulse'));
 $PAGE->set_heading(format_string($course->fullname));
 $report = new \report_coursepulse\local\report($course, (int)$group);
-$form = new \report_coursepulse\form\filters($url, ['courseid' => $id, 'group' => $group, 'risks' => $risks], 'get');
+$form = new \report_coursepulse\form\filters($url, ['courseid' => $id, 'group' => $group, 'risks' => $risks, 'summaryonly' => !$viewstudents], 'get');
 if ($data = $form->get_data()) {
     $from = (int)$data->from;
     $to = (int)$data->to;
-    $risk = $data->risk;
-    $search = trim($data->search);
+    $risk = $viewstudents ? $data->risk : '';
+    $search = $viewstudents ? trim($data->search) : '';
     $params = ['id' => $id, 'group' => $group, 'from' => $from, 'to' => $to, 'risk' => $risk, 'search' => $search];
     $url = new moodle_url('/report/coursepulse/index.php', $params);
     $PAGE->set_url($url);
@@ -72,14 +90,14 @@ $form->set_data((object)$params);
 $until = min(time() + 1, $to + DAYSECS);
 $size = 25;
 $allforexcel = $export && $exportformat === 'xlsx';
-$roster = $report->roster($userid ? '' : $risk, $userid ? '' : $search, $userid || $allforexcel ? 0 : $page, $allforexcel ? 5000 : $size, $userid);
+$roster = $report->roster($userid ? '' : $risk, $userid ? '' : $search, $userid || $allforexcel ? 0 : $page, $viewstudents ? ($allforexcel ? 5000 : $size) : 0, $userid);
 if ($allforexcel && $roster['matched'] > 5000) {
     throw new moodle_exception('excellimit', 'report_coursepulse');
 }
 if ($userid && !isset($roster['rows'][$userid])) {
     throw new moodle_exception('notstudent', 'report_coursepulse');
 }
-$engagement = $report->engagement(array_keys($roster['rows']), $from, $until);
+$engagement = $report->engagement($viewstudents ? array_keys($roster['rows']) : [], $from, $until);
 $formatduration = static function($seconds) {
     return sprintf('%02d:%02d:%02d', intdiv((int)$seconds, 3600), intdiv((int)$seconds % 3600, 60), (int)$seconds % 60);
 };
@@ -110,6 +128,10 @@ if ($export) {
 }
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('pluginname', 'report_coursepulse'));
+if (has_capability('report/coursepulse:viewoverview', context_coursecat::instance($course->category))) {
+    echo html_writer::link(new moodle_url('/report/coursepulse/overview.php', ['categoryid' => $course->category]),
+        get_string('overview', 'report_coursepulse'), ['class' => 'btn btn-secondary mb-3']);
+}
 echo $OUTPUT->notification(get_string('methodology', 'report_coursepulse'), 'info');
 groups_print_course_menu($course, new moodle_url('/report/coursepulse/index.php', ['id' => $id]));
 $form->display();
@@ -165,7 +187,7 @@ if (!$userid && $s['total']) {
     }
     echo html_writer::end_div();
 }
-if ($roster['rows'] && empty($engagement['unavailable']) && !$engagement['truncated']) {
+if ($viewstudents && $roster['rows'] && empty($engagement['unavailable']) && !$engagement['truncated']) {
     echo $OUTPUT->heading(get_string('eventtrend', 'report_coursepulse'), 3);
     $labels = [];
     $counts = [];
@@ -215,41 +237,43 @@ if ($userid) {
         echo html_writer::table($iptable);
     }
 }
-$table = new html_table();
-$table->head = array_map(static fn($key) => get_string($key, 'report_coursepulse'),
-    ['student', 'progress', 'lastaccess', 'risk', 'estimatedtime', 'sessions', 'averagesession', 'events']);
-foreach ($roster['rows'] as $row) {
-    $m = $engagement['users'][$row->id] ?? null;
-    $valid = $m && empty($engagement['truncated']);
-    $detail = new moodle_url('/report/coursepulse/index.php', $params + ['userid' => $row->id]);
-    $progress = $row->progress === null ? get_string('notavailable', 'report_coursepulse') :
-        html_writer::tag('progress', '', ['max' => 100, 'value' => $row->progress,
-            'aria-label' => get_string('progress', 'report_coursepulse')]) . ' ' . $row->progress . '%';
-    $table->data[] = [html_writer::link($detail, s(fullname($row))), $progress,
-        $row->lastaccess ? userdate($row->lastaccess) : get_string('never'),
-        html_writer::span($risks[$row->risk], 'coursepulse-risk coursepulse-' . $row->risk),
-        $valid ? $formatduration($m['seconds']) : '—', $valid ? $m['sessions'] : '—',
-        $valid ? $formatduration($m['sessions'] ? $m['seconds'] / $m['sessions'] : 0) : '—',
-        $valid ? $m['events'] : '—'];
-}
-echo html_writer::div(html_writer::table($table), 'table-responsive');
-$measured = array_values($engagement['users']);
-if ($measured && !$engagement['truncated']) {
-    $mean = array_sum(array_column($measured, 'seconds')) / count($measured);
-    echo html_writer::tag('p', get_string('pagemean', 'report_coursepulse', $formatduration($mean)));
-}
-if (!$userid) {
-    echo $OUTPUT->paging_bar($roster['matched'], $page, $size, $url);
-}
-echo html_writer::tag('p', get_string('pagescope', 'report_coursepulse'));
-if (has_capability('report/coursepulse:export', $context)) {
-    echo html_writer::start_div('coursepulse-downloads');
-    $excelurl = new moodle_url('/report/coursepulse/index.php', $params +
-        ['userid' => $userid, 'export' => 1, 'format' => 'xlsx', 'sesskey' => sesskey()]);
-    echo html_writer::link($excelurl, get_string('exportexcel', 'report_coursepulse'), ['class' => 'btn btn-primary']);
-    $exporturl = new moodle_url('/report/coursepulse/index.php', $params +
-        ['page' => $page, 'userid' => $userid, 'export' => 1, 'sesskey' => sesskey()]);
-    echo html_writer::link($exporturl, get_string('exportpage', 'report_coursepulse'), ['class' => 'btn btn-secondary']);
-    echo html_writer::end_div();
+if ($viewstudents) {
+    $table = new html_table();
+    $table->head = array_map(static fn($key) => get_string($key, 'report_coursepulse'),
+        ['student', 'progress', 'lastaccess', 'risk', 'estimatedtime', 'sessions', 'averagesession', 'events']);
+    foreach ($roster['rows'] as $row) {
+        $m = $engagement['users'][$row->id] ?? null;
+        $valid = $m && empty($engagement['truncated']);
+        $detail = new moodle_url('/report/coursepulse/index.php', $params + ['userid' => $row->id]);
+        $progress = $row->progress === null ? get_string('notavailable', 'report_coursepulse') :
+            html_writer::tag('progress', '', ['max' => 100, 'value' => $row->progress,
+                'aria-label' => get_string('progress', 'report_coursepulse')]) . ' ' . $row->progress . '%';
+        $table->data[] = [html_writer::link($detail, s(fullname($row))), $progress,
+            $row->lastaccess ? userdate($row->lastaccess) : get_string('never'),
+            html_writer::span($risks[$row->risk], 'coursepulse-risk coursepulse-' . $row->risk),
+            $valid ? $formatduration($m['seconds']) : '—', $valid ? $m['sessions'] : '—',
+            $valid ? $formatduration($m['sessions'] ? $m['seconds'] / $m['sessions'] : 0) : '—',
+            $valid ? $m['events'] : '—'];
+    }
+    echo html_writer::div(html_writer::table($table), 'table-responsive');
+    $measured = array_values($engagement['users']);
+    if ($measured && !$engagement['truncated']) {
+        $mean = array_sum(array_column($measured, 'seconds')) / count($measured);
+        echo html_writer::tag('p', get_string('pagemean', 'report_coursepulse', $formatduration($mean)));
+    }
+    if (!$userid) {
+        echo $OUTPUT->paging_bar($roster['matched'], $page, $size, $url);
+    }
+    echo html_writer::tag('p', get_string('pagescope', 'report_coursepulse'));
+    if (has_capability('report/coursepulse:export', $context)) {
+        echo html_writer::start_div('coursepulse-downloads');
+        $excelurl = new moodle_url('/report/coursepulse/index.php', $params +
+            ['userid' => $userid, 'export' => 1, 'format' => 'xlsx', 'sesskey' => sesskey()]);
+        echo html_writer::link($excelurl, get_string('exportexcel', 'report_coursepulse'), ['class' => 'btn btn-primary']);
+        $exporturl = new moodle_url('/report/coursepulse/index.php', $params +
+            ['page' => $page, 'userid' => $userid, 'export' => 1, 'sesskey' => sesskey()]);
+        echo html_writer::link($exporturl, get_string('exportpage', 'report_coursepulse'), ['class' => 'btn btn-secondary']);
+        echo html_writer::end_div();
+    }
 }
 echo $OUTPUT->footer();

@@ -86,3 +86,11 @@ $string['short_critical'] = 'High risk';
 $string['short_never'] = 'No access';
 $string['short_grace'] = 'Grace / outside dates';
 $string['short_completed'] = 'Completed';
+
+$string['coursepulse:viewoverview'] = 'View category overview outside courses';
+$string['coursepulse:viewstudents'] = 'View individual student data and details';
+$string['overview'] = 'CoursePulse: category overview';
+$string['overviewscope'] = 'Includes authorised courses in this category and its subcategories. Cards and chart summarise only the current page (up to 25 courses). Counts are course enrolments: a student in two courses counts twice. Courses requiring group selection are excluded from these totals. Time estimates and individual details are available inside each authorised course report.';
+$string['choosegroup'] = 'Open report and select an authorised group';
+$string['followup'] = 'Enrolments requiring follow-up by course';
+$string['noauthorisedcourses'] = 'No authorised courses in this category.';

@@ -36,6 +36,8 @@ jobs:
           extensions: mysqli, pgsql, intl, mbstring, soap, gd, zip
           coverage: none
           ini-values: max_input_vars=5000, memory_limit=512M
+      - name: Install required test locale
+        run: sudo locale-gen en_AU.UTF-8
       - name: Install test tools
         run: |
           composer create-project --no-interaction moodlehq/moodle-plugin-ci ci ^4

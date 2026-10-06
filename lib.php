@@ -21,3 +21,20 @@ function report_coursepulse_extend_navigation_course($navigation, $course, $cont
             navigation_node::TYPE_SETTING, null, null, new pix_icon('i/report', ''));
     }
 }
+
+/** Entry point from course-category settings, including report-only category roles. */
+function report_coursepulse_extend_navigation_category_settings($navigation, $context) {
+    if (has_capability('report/coursepulse:viewoverview', $context)) {
+        $navigation->add(get_string('overview', 'report_coursepulse'),
+            new moodle_url('/report/coursepulse/overview.php', ['categoryid' => $context->instanceid]),
+            navigation_node::TYPE_SETTING, null, 'coursepulseoverview', new pix_icon('i/report', ''));
+    }
+}
+/** Front-page report link. A direct custom-menu URL also works with Boost themes. */
+function report_coursepulse_extend_navigation_frontpage($navigation, $course, $context) {
+    if (isloggedin() && !isguestuser() && \report_coursepulse\local\overview::categories()) {
+        $navigation->add(get_string('overview', 'report_coursepulse'),
+            new moodle_url('/report/coursepulse/overview.php'), navigation_node::TYPE_SETTING,
+            null, 'coursepulseoverview', new pix_icon('i/report', ''));
+    }
+}

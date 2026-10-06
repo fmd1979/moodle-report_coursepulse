@@ -2,7 +2,7 @@
 
 A read-only Moodle course report for teachers and coordinators. It combines current activity completion, inactivity indicators and estimated session time with permission-controlled connection IP history.
 
-**Release:** 0.2.0-beta. **Component:** `report_coursepulse`. **Author:** Franklin David Moya Dávila / SiteEcuador. **License:** GNU GPL v3 or later.
+**Release:** 0.3.0-beta. **Component:** `report_coursepulse`. **Author:** Franklin David Moya Dávila / SiteEcuador. **License:** GNU GPL v3 or later.
 
 ## Features
 
@@ -31,6 +31,12 @@ Designed for Moodle 5.0 with PHP 8.2+ and Moodle 5.1 with PHP 8.3+ and MySQL 8.4
 7. Enable activity completion at site/course/activity level and keep the standard log store enabled.
 
 Teachers can view; editing teachers can export; managers can view IPs. Administrators can assign capabilities via roles. In separate-groups mode, viewers without `moodle/site:accessallgroups` must select a group they belong to. A teacher with no permitted group cannot access the report.
+
+## Category analysts outside courses
+
+Open `/report/coursepulse/overview.php` or `index.php` without a course id. A category-assigned custom role can compare authorised courses without enrolment, teaching or admin permissions. Independent capabilities control category access, individual learner records, exports and IPs. See [docs/ANALISTA_ES.md](docs/ANALISTA_ES.md) for role and menu setup.
+
+Category cards/chart cover the current page (25 courses), counting course enrolments rather than unique students. Separate-group courses without all-groups access require a permitted group inside the course report and are excluded from category totals. Hidden courses require the core hidden-course capability. XLSX remains per course.
 
 ## Interpretation and performance
 

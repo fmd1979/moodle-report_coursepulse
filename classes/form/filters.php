@@ -25,9 +25,11 @@ class filters extends \moodleform {
         $mform->setType('group', PARAM_INT);
         $mform->addElement('date_selector', 'from', get_string('from', 'report_coursepulse'));
         $mform->addElement('date_selector', 'to', get_string('to', 'report_coursepulse'));
-        $mform->addElement('select', 'risk', get_string('risk', 'report_coursepulse'), $this->_customdata['risks']);
-        $mform->addElement('text', 'search', get_string('search', 'report_coursepulse'));
-        $mform->setType('search', PARAM_TEXT);
+        if (empty($this->_customdata['summaryonly'])) {
+            $mform->addElement('select', 'risk', get_string('risk', 'report_coursepulse'), $this->_customdata['risks']);
+            $mform->addElement('text', 'search', get_string('search', 'report_coursepulse'));
+            $mform->setType('search', PARAM_TEXT);
+        }
         $mform->addElement('submit', 'submitbutton', get_string('filter'));
     }
     /** Date validation also runs before any database queries in index.php. */

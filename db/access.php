@@ -14,6 +14,15 @@
  */
 defined('MOODLE_INTERNAL') || die();
 $capabilities = [
+    'report/coursepulse:viewoverview' => [
+        'riskbitmask' => RISK_PERSONAL, 'captype' => 'read', 'contextlevel' => CONTEXT_COURSECAT,
+        'archetypes' => ['manager' => CAP_ALLOW],
+    ],
+    'report/coursepulse:viewstudents' => [
+        'riskbitmask' => RISK_PERSONAL, 'captype' => 'read', 'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => ['teacher' => CAP_ALLOW, 'editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW],
+        'clonepermissionsfrom' => 'report/coursepulse:view',
+    ],
     'report/coursepulse:view' => [
         'riskbitmask' => RISK_PERSONAL, 'captype' => 'read', 'contextlevel' => CONTEXT_COURSE,
         'archetypes' => ['teacher' => CAP_ALLOW, 'editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW],

@@ -36,6 +36,9 @@ class report {
         $this->course = $course;
         $this->context = \context_course::instance($course->id);
         require_capability('report/coursepulse:view', $this->context);
+        if (!$course->visible) {
+            require_capability('moodle/course:viewhiddencourses', $this->context);
+        }
         $this->group = $group;
         $this->now = time();
         $mode = groups_get_course_groupmode($course);
@@ -98,6 +101,9 @@ class report {
     /** Stream learner records; only retain the requested page. */
     public function roster(string $risk, string $search, int $page, int $size, int $userid = 0): array {
         global $DB;
+        if ($userid || $size > 0) {
+            require_capability('report/coursepulse:viewstudents', $this->context);
+        }
         [$sql, $params] = $this->roster_sql();
         $summary = ['total' => 0, 'active' => 0, 'warning' => 0, 'critical' => 0, 'never' => 0,
             'grace' => 0, 'completed' => 0, 'progresssum' => 0, 'bands' => [0, 0, 0, 0, 0]];
@@ -142,6 +148,7 @@ class report {
         if (!$userids) {
             return $result;
         }
+        require_capability('report/coursepulse:viewstudents', $this->context);
         // Log reader availability is checked rather than presuming historical data exists.
         $manager = get_log_manager();
         $readers = $manager->get_readers('\core\log\sql_reader');

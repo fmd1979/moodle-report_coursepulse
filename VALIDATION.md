@@ -1,3 +1,13 @@
+# Validation record — 0.3.0-beta
+
+Date: 2026-10-06.
+
+- Four new PHPUnit tests cover category/subcategory scope, sibling rejection, hidden-course exclusion, course prohibitions, pagination, report-only access without enrolment or course content capability, independent student access, and separate-group summary suppression.
+- Previous 0.2 CI installation, PHP lint and Moodle validation passed; PHPUnit stopped before tests because runner locale en_AU.UTF-8 was missing. This release adds locale generation.
+- Complete 0.3 CI and staging browser checks pending at packaging time. No stable or Marketplace certification implied.
+
+## Previous release validation
+
 # Validation record — 0.2.0-beta
 
 Date: 2026-10-06.

@@ -14,8 +14,8 @@
  */
 defined('MOODLE_INTERNAL') || die();
 $plugin->component = 'report_coursepulse';
-$plugin->version = 2026100600;
+$plugin->version = 2026100601;
 $plugin->requires = 2025041400;
 $plugin->maturity = MATURITY_BETA;
-$plugin->release = '0.1.0-beta';
+$plugin->release = '0.2.0-beta';
 $plugin->supported = [500, 501];

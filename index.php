@@ -28,6 +28,14 @@ $userid = max(0, optional_param('userid', 0, PARAM_INT));
 $risk = optional_param('risk', '', PARAM_ALPHA);
 $search = trim(optional_param('search', '', PARAM_TEXT));
 $export = optional_param('export', false, PARAM_BOOL);
+$exportformat = optional_param('format', 'csv', PARAM_ALPHA);
+if (!in_array($exportformat, ['csv', 'xlsx'], true)) {
+    throw new moodle_exception('invalidparameter');
+}
+if ($export) {
+    require_capability('report/coursepulse:export', $context);
+    require_sesskey();
+}
 $today = usergetmidnight(time());
 $from = isset($_GET['from']) && is_array($_GET['from']) ? $today - 29 * DAYSECS :
     optional_param('from', $today - 29 * DAYSECS, PARAM_INT);
@@ -63,7 +71,11 @@ if ($from < 0 || $to < $from || $to - $from > 90 * DAYSECS || $to > $today) {
 $form->set_data((object)$params);
 $until = min(time() + 1, $to + DAYSECS);
 $size = 25;
-$roster = $report->roster($userid ? '' : $risk, $userid ? '' : $search, $userid ? 0 : $page, $size, $userid);
+$allforexcel = $export && $exportformat === 'xlsx';
+$roster = $report->roster($userid ? '' : $risk, $userid ? '' : $search, $userid || $allforexcel ? 0 : $page, $allforexcel ? 5000 : $size, $userid);
+if ($allforexcel && $roster['matched'] > 5000) {
+    throw new moodle_exception('excellimit', 'report_coursepulse');
+}
 if ($userid && !isset($roster['rows'][$userid])) {
     throw new moodle_exception('notstudent', 'report_coursepulse');
 }
@@ -71,9 +83,13 @@ $engagement = $report->engagement(array_keys($roster['rows']), $from, $until);
 $formatduration = static function($seconds) {
     return sprintf('%02d:%02d:%02d', intdiv((int)$seconds, 3600), intdiv((int)$seconds % 3600, 60), (int)$seconds % 60);
 };
+if ($allforexcel) {
+    $book = \report_coursepulse\local\excel::build($course, $roster, $engagement,
+        ['from' => $from, 'to' => $to, 'risk' => $risks[$risk], 'search' => $search]);
+    $book->close();
+    exit;
+}
 if ($export) {
-    require_capability('report/coursepulse:export', $context);
-    require_sesskey();
     $csv = new csv_export_writer();
     $csv->set_filename('coursepulse_' . $id . '_page_' . ($page + 1));
     $csv->add_data(array_map(static fn($key) => get_string($key, 'report_coursepulse'),
@@ -117,12 +133,37 @@ if ($report->modules && $s['total']) {
     echo html_writer::tag('p', get_string('meanprogress', 'report_coursepulse', round($s['progresssum'] / $s['total'], 1)));
 }
 if (!$userid && $s['total']) {
-    $chart = new \core\chart_bar();
-    $chart->add_series(new \core\chart_series(get_string('students', 'report_coursepulse'),
-        array_map(static fn($key) => $s[$key], ['active', 'warning', 'critical', 'never', 'grace', 'completed'])));
-    $chart->set_labels(array_map(static fn($key) => get_string('risk_' . $key, 'report_coursepulse'),
-        ['active', 'warning', 'critical', 'never', 'grace', 'completed']));
+    echo html_writer::start_div('coursepulse-charts');
+    echo html_writer::start_div('coursepulse-chart');
+    echo $OUTPUT->heading(get_string('statuschart', 'report_coursepulse'), 3);
+    $keys = ['active', 'warning', 'critical', 'never', 'grace', 'completed'];
+    $chart = new \core\chart_pie();
+    $chart->set_doughnut(true);
+    $series = new \core\chart_series(get_string('students', 'report_coursepulse'),
+        array_map(static fn($key) => $s[$key], $keys));
+    $series->set_colors(['#2563eb', '#eab308', '#dc2626', '#64748b', '#a78bfa', '#16a34a']);
+    $chart->add_series($series);
+    $chart->set_labels(array_map(static fn($key) => get_string('short_' . $key, 'report_coursepulse'), $keys));
+    $chart->set_legend_options(['position' => 'bottom']);
     echo $OUTPUT->render($chart);
+    echo html_writer::end_div();
+    if ($report->modules) {
+        echo html_writer::start_div('coursepulse-chart');
+        echo $OUTPUT->heading(get_string('progresschart', 'report_coursepulse'), 3);
+        $progresschart = new \core\chart_bar();
+        $progresschart->set_horizontal(true);
+        $series = new \core\chart_series(get_string('students', 'report_coursepulse'), $s['bands']);
+        $series->set_colors(['#94a3b8', '#60a5fa', '#3b82f6', '#2563eb', '#16a34a']);
+        $progresschart->add_series($series);
+        $progresschart->set_labels(['0–24.9%', '25–49.9%', '50–74.9%', '75–99.9%', '100%']);
+        $progresschart->set_legend_options(['display' => false]);
+        $axis = $progresschart->get_xaxis(0, true);
+        $axis->set_min(0);
+        $axis->set_stepsize(max(1, (int)ceil(max($s['bands']) / 5)));
+        echo $OUTPUT->render($progresschart);
+        echo html_writer::end_div();
+    }
+    echo html_writer::end_div();
 }
 if ($roster['rows'] && empty($engagement['unavailable']) && !$engagement['truncated']) {
     echo $OUTPUT->heading(get_string('eventtrend', 'report_coursepulse'), 3);
@@ -130,13 +171,19 @@ if ($roster['rows'] && empty($engagement['unavailable']) && !$engagement['trunca
     $counts = [];
     for ($day = $from; $day <= $to; $day += DAYSECS) {
         $key = userdate($day, '%Y-%m-%d');
-        $labels[] = $key;
+        $labels[] = userdate($day, '%d/%m');
         $counts[] = $engagement['daily'][$key] ?? 0;
     }
-    $trend = new \core\chart_line();
-    $trend->add_series(new \core\chart_series(get_string('events', 'report_coursepulse'), $counts));
+    $trend = new \core\chart_bar();
+    $series = new \core\chart_series(get_string('events', 'report_coursepulse'), $counts);
+    $series->set_color('#2563eb');
+    $trend->add_series($series);
+    $trend->set_legend_options(['display' => false]);
+    $axis = $trend->get_yaxis(0, true);
+    $axis->set_min(0);
+    $axis->set_stepsize(max(1, (int)ceil(max($counts) / 5)));
     $trend->set_labels($labels);
-    echo $OUTPUT->render($trend);
+    echo html_writer::div($OUTPUT->render($trend), 'coursepulse-trend');
 }
 if ($userid) {
     $learner = $roster['rows'][$userid];
@@ -196,8 +243,13 @@ if (!$userid) {
 }
 echo html_writer::tag('p', get_string('pagescope', 'report_coursepulse'));
 if (has_capability('report/coursepulse:export', $context)) {
+    echo html_writer::start_div('coursepulse-downloads');
+    $excelurl = new moodle_url('/report/coursepulse/index.php', $params +
+        ['userid' => $userid, 'export' => 1, 'format' => 'xlsx', 'sesskey' => sesskey()]);
+    echo html_writer::link($excelurl, get_string('exportexcel', 'report_coursepulse'), ['class' => 'btn btn-primary']);
     $exporturl = new moodle_url('/report/coursepulse/index.php', $params +
         ['page' => $page, 'userid' => $userid, 'export' => 1, 'sesskey' => sesskey()]);
     echo html_writer::link($exporturl, get_string('exportpage', 'report_coursepulse'), ['class' => 'btn btn-secondary']);
+    echo html_writer::end_div();
 }
 echo $OUTPUT->footer();

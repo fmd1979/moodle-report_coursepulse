@@ -105,6 +105,7 @@ final class report_test extends \advanced_testcase {
         $data = $r->roster('', '', 0, 25);
         $this->assertCount(1, $r->modules);
         $this->assertCount(1, $data['rows']);
+        $this->assertSame([0, 0, 0, 0, 1], $data['summary']['bands']);
         $this->assertEquals(100, $data['rows'][$a->id]->progress);
         $this->assertSame('completed', $data['rows'][$a->id]->risk);
     }

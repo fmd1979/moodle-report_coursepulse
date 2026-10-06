@@ -3,7 +3,7 @@
 ## Instalar
 
 1. En una copia de pruebas de Moodle 5, entra como administrador.
-2. Administración del sitio → Plugins → Instalar plugins → sube `report_coursepulse-0.1.0-beta.zip`.
+2. Administración del sitio → Plugins → Instalar plugins → sube `report_coursepulse-0.2.0-beta.zip`.
 3. Comprueba el componente `report_coursepulse` y completa la actualización.
 4. Si instalas manualmente: Moodle 5.0 `report/coursepulse`; Moodle 5.1 `public/report/coursepulse`. Copia ahí el contenido del directorio `coursepulse`, sin anidar otro directorio.
 5. Abre un curso → Informes → CoursePulse — Dashboard del curso.
@@ -35,11 +35,15 @@ En grupos separados, un docente sin acceso a todos los grupos solo puede revisar
 
 ## Lectura del dashboard
 
-Las tarjetas cubren el curso/grupo completo, aun cuando filtras un nombre o estado. La tabla refleja el filtro y la página. La duración y el promedio se calculan solo para los estudiantes de esa página. El CSV exporta esa página; recorre las páginas si necesitas todas.
+Las tarjetas cubren el curso/grupo completo, aun cuando filtras un nombre o estado. La tabla refleja el filtro y la página. La duración y el promedio se calculan solo para los estudiantes de esa página. El CSV exporta esa página. El botón Descargar Excel exporta todos los estudiantes que coinciden con los filtros, hasta 5.000, en dos hojas: Resumen y Estudiantes. Para selecciones mayores, filtra por grupo. Los porcentajes y duraciones son valores numéricos; puedes calcular promedios en Excel. Si se supera el límite de 100.000 eventos, los tiempos se dejan vacíos y se indica el motivo en Resumen.
 
 Las fechas filtran eventos y duración, no el avance histórico. El avance mostrado es actual. Entra al nombre de un estudiante para ver sus actividades por sección y sus últimas IP, si tu rol tiene permiso.
 
 Completar una actividad no implica aprobarla. Un tiempo de cero puede corresponder a un solo evento o a registros eliminados. El riesgo de abandono necesita revisión humana.
+
+## Actualizar desde 0.1.0
+
+Sube el nuevo ZIP como actualización del plugin existente y completa Administración del sitio → Notificaciones. Después purga las cachés en Administración del sitio → Desarrollo → Purgar cachés para recargar estilos y traducciones. No desinstales el plugin para actualizar.
 
 ## Desinstalar
 

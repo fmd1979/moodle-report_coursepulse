@@ -7,3 +7,14 @@
 .coursepulse-critical, .coursepulse-never { background: #ffe0e0; color: #8c1616; }
 .coursepulse-active, .coursepulse-completed { background: #d9f3e6; color: #12552f; }
 .coursepulse-grace { background: #e4e9ef; color: #253547; }
+
+.coursepulse-charts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; margin: 1.5rem 0; }
+.coursepulse-chart, .coursepulse-trend { background: #fff; color: #182337; border: 1px solid #dbe3ee; border-radius: .75rem; padding: 1.25rem; min-width: 0; }
+.coursepulse-chart h3 { font-size: 1.1rem; margin-bottom: 1rem; }
+.coursepulse-chart .chart-area { max-width: 420px; margin: auto; }
+.coursepulse-downloads { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1rem 0; }
+.coursepulse-card { border-top: 3px solid #2563eb; box-shadow: 0 2px 6px rgba(15, 23, 42, .04); }
+@media (max-width: 900px) { .coursepulse-charts { grid-template-columns: 1fr; } }
+.coursepulse-chart .chart-image { position: relative; width: 100%; height: 320px; }
+.coursepulse-trend .chart-area { width: 100%; max-width: none; }
+.coursepulse-trend .chart-image { position: relative; width: 100%; height: 300px; }

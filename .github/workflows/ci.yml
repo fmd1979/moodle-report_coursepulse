@@ -35,6 +35,7 @@ jobs:
           php-version: '8.3'
           extensions: mysqli, pgsql, intl, mbstring, soap, gd, zip
           coverage: none
+          ini-values: max_input_vars=5000, memory_limit=512M
       - name: Install test tools
         run: |
           composer create-project --no-interaction moodlehq/moodle-plugin-ci ci ^4

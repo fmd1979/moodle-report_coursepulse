@@ -100,7 +100,7 @@ class report {
         global $DB;
         [$sql, $params] = $this->roster_sql();
         $summary = ['total' => 0, 'active' => 0, 'warning' => 0, 'critical' => 0, 'never' => 0,
-            'grace' => 0, 'completed' => 0, 'progresssum' => 0];
+            'grace' => 0, 'completed' => 0, 'progresssum' => 0, 'bands' => [0, 0, 0, 0, 0]];
         $rows = [];
         $matched = 0;
         $ongoing = (!$this->course->startdate || $this->course->startdate <= $this->now) &&
@@ -117,6 +117,10 @@ class report {
                 $summary['total']++;
                 $summary[$row->risk]++;
                 $summary['progresssum'] += $row->progress ?? 0;
+                if ($row->progress !== null) {
+                    $band = $row->progress >= 100 ? 4 : min(3, (int)floor($row->progress / 25));
+                    $summary['bands'][$band]++;
+                }
                 if (($risk && $row->risk !== $risk) || ($userid && $row->id != $userid) ||
                         ($search !== '' && mb_stripos(fullname($row), $search) === false)) {
                     continue;

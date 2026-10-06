@@ -1,3 +1,15 @@
+# Validation record — 0.2.0-beta
+
+Date: 2026-10-06.
+
+- All 14 PHP files pass PHP 8.3 syntax checks.
+- XLSX export checked against Moodle 5.0 native Excel wrapper and its bundled PhpSpreadsheet: two sheets, text-only formula-like names, numeric percentage and formatting, numeric duration over 24 hours, elapsed format, XLSX save/reopen and blank truncated measurements (8 checks passed).
+- Added regression coverage in tests/excel_test.php and completion-band assertion in report_test.php for CI.
+- Native chart object serialization checked for coloured doughnut, horizontal integer-count bars and integer-count daily bars.
+- Browser visual verification in the actual theme and the new complete CI run remain pending.
+
+## Previous release validation
+
 # Validation record — 0.1.0-beta
 
 Date: 2026-10-06.

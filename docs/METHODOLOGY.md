@@ -27,3 +27,7 @@ Per-page mean learner time includes zero-event learners; mean session is duratio
 Every request requires course login and view capability. Roster uses active enrolments and learner capability. Detail uses this same roster, preventing arbitrary userid access. Separate-group restrictions apply to detail and CSV too. Exports additionally require export capability and sesskey. IP history additionally requires viewips. Parameterised DML, escaped output and formula-safe CSV protect inputs/outputs.
 
 No persistent personal summaries, historical snapshots or outbound requests. Core log retention and privacy exports/deletion remain authoritative. No promise of exact dropout detection, attendance validation or identity validation.
+
+## Excel export (0.2.0)
+
+Native XLSX with summary and learners sheets. The learner sheet contains all authorised learners matching the filters, up to 5,000; exceeding this limit rejects the export explicitly. Its events are estimated across this selection using the existing 100,000-event cap. Reaching the cap leaves event/time cells blank and records the reason in Summary; completion still exports. IPs are not included. Progress bands use current progress rounded to one decimal, with complete at 100%. Status/completion charts cover the entire authorised course/group; the daily trend covers displayed learners.

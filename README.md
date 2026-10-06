@@ -2,11 +2,11 @@
 
 A read-only Moodle course report for teachers and coordinators. It combines current activity completion, inactivity indicators and estimated session time with permission-controlled connection IP history.
 
-**Release:** 0.1.0-beta. **Component:** `report_coursepulse`. **Author:** Franklin David Moya Dávila / SiteEcuador. **License:** GNU GPL v3 or later.
+**Release:** 0.2.0-beta. **Component:** `report_coursepulse`. **Author:** Franklin David Moya Dávila / SiteEcuador. **License:** GNU GPL v3 or later.
 
 ## Features
 
-- Course/group summary cards and a follow-up status chart.
+- Course/group summary cards, a colour-coded follow-up doughnut and a horizontal completion-distribution chart.
 - Active learners: active enrolment and `moodle/course:isincompletionreports` capability. Suspended/deleted users and suspended/expired enrolments are excluded.
 - Current completion percentage over visible, completion-enabled activities. Hidden sections are excluded. Completed-failed counts as completed, and individual activity status distinguishes pass/fail.
 - Learner detail with activity status by section.
@@ -14,7 +14,7 @@ A read-only Moodle course report for teachers and coordinators. It combines curr
 - Estimated course sessions, total time, mean session duration, event count and per-page mean learner time.
 - Daily event trend for the displayed learners.
 - Date (maximum 90 days), name, group and status filters; 25 learners per page.
-- CSV export of the displayed page, protected against spreadsheet formula injection.
+- Native Excel (.xlsx) export of all filtered learners (up to 5,000), with summary and learner sheets, typed percentages and elapsed durations. CSV export of the displayed page remains available. Both exports protect against spreadsheet formula injection.
 - Latest 100 connection events and IPs available only with a separate capability.
 - English and Spanish language packs. Native Moodle charts; no third-party JavaScript or external service.
 
@@ -36,7 +36,7 @@ Teachers can view; editing teachers can export; managers can view IPs. Administr
 
 See [docs/METHODOLOGY.md](docs/METHODOLOGY.md). Time is estimated, never verified study time. Indicators are not proof of dropout. IPs are event addresses, not geolocation or proof of identity. No AI, heartbeat tracking, automatic messaging or confirmed-dropout records in this version.
 
-Current completion and last course access are independent of the event date filter. The filter controls events/time/IP only. Course completion and "all tracked activities completed" are not equivalent; grade/course completion rules may differ.
+Current completion and last course access are independent of the event date filter. The filter controls events/time/IP only. Excel exports all filtered learners; displayed time statistics and CSV cover only the current page. Course completion and "all tracked activities completed" are not equivalent; grade/course completion rules may differ.
 
 The roster is streamed; only the displayed page is retained. Time calculations are limited to the page or selected learner and at most 100,000 events. A reached event limit suppresses estimates instead of showing incomplete numbers. No plugin cron task or personal-data cache is needed. Large courses still require staging benchmarks: completion aggregation reads tracked activities for the course.
 

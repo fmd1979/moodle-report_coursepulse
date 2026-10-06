@@ -68,6 +68,7 @@ if (!$viewstudents) {
 $params = ['id' => $id, 'group' => $group, 'from' => $from, 'to' => $to, 'risk' => $risk, 'search' => $search];
 $url = new moodle_url('/report/coursepulse/index.php', $params);
 $PAGE->set_url($url);
+$PAGE->set_course($course);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('report');
 $PAGE->set_title(get_string('pluginname', 'report_coursepulse'));

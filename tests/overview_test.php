@@ -19,7 +19,7 @@ use report_coursepulse\local\report;
 /** Category-role access without teaching, administration or course enrolment. */
 final class overview_test extends \advanced_testcase {
     /** Build an empty report-only role at the supplied category context. */
-    private function analyst(\stdClass $category): array {
+    private function analyst($category): array {
         $user = $this->getDataGenerator()->create_user();
         $role = create_role('Follow-up analyst', 'coursepulseanalyst', '');
         $context = \context_coursecat::instance($category->id);

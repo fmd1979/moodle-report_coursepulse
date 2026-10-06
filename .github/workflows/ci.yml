@@ -1,0 +1,55 @@
+name: Moodle plugin checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        moodle: [MOODLE_500_STABLE, MOODLE_501_STABLE]
+        database: [mysqli, pgsql]
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: moodle
+        ports: ['3306:3306']
+        options: --health-cmd="mysqladmin ping --password=moodle" --health-interval=10s --health-timeout=5s --health-retries=10
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: moodle
+        ports: ['5432:5432']
+        options: --health-cmd="pg_isready -U postgres" --health-interval=10s --health-timeout=5s --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: plugin
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mysqli, pgsql, intl, mbstring, soap, gd, zip
+          coverage: none
+      - name: Install test tools
+        run: |
+          composer create-project --no-interaction moodlehq/moodle-plugin-ci ci ^4
+          echo "$GITHUB_WORKSPACE/ci/bin" >> "$GITHUB_PATH"
+          echo "$GITHUB_WORKSPACE/ci/vendor/bin" >> "$GITHUB_PATH"
+      - name: Install Moodle test instance
+        run: moodle-plugin-ci install --plugin "$GITHUB_WORKSPACE/plugin" --db-host=127.0.0.1
+        env:
+          DB: ${{ matrix.database }}
+          DB_USER: ${{ matrix.database == 'mysqli' && 'root' || 'postgres' }}
+          DB_PASS: moodle
+          MOODLE_BRANCH: ${{ matrix.moodle }}
+      - name: PHP syntax
+        run: moodle-plugin-ci phplint
+      - name: Moodle validation
+        run: moodle-plugin-ci validate
+      - name: Moodle PHPUnit tests
+        run: moodle-plugin-ci phpunit

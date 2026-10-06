@@ -46,6 +46,10 @@ No plugin tables, user preferences, cookies or additional personal-data storage;
 
 ## Development and publication
 
+Source: https://github.com/fmd1979/moodle-report_coursepulse
+
+Support and issues: https://github.com/fmd1979/moodle-report_coursepulse/issues
+
 See [CONTRIBUTING.md](CONTRIBUTING.md), [docs/MARKETPLACE.md](docs/MARKETPLACE.md), [docs/GIT_ES.md](docs/GIT_ES.md), [VALIDATION.md](VALIDATION.md) and [CHANGELOG.md](CHANGELOG.md).
 
 A GitHub repository and Marketplace acceptance are separate. This beta is not submitted, approved or certified. Support and issue tracking should be enabled on the actual public repository before submission. The proposed component name must be checked for availability before listing.

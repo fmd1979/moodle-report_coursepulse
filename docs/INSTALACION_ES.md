@@ -3,7 +3,7 @@
 ## Instalar
 
 1. En una copia de pruebas de Moodle 5, entra como administrador.
-2. Administración del sitio → Plugins → Instalar plugins → sube `report_coursepulse-0.2.0-beta.zip`.
+2. Administración del sitio → Plugins → Instalar plugins → sube `report_coursepulse-0.3.0-beta.zip`.
 3. Comprueba el componente `report_coursepulse` y completa la actualización.
 4. Si instalas manualmente: Moodle 5.0 `report/coursepulse`; Moodle 5.1 `public/report/coursepulse`. Copia ahí el contenido del directorio `coursepulse`, sin anidar otro directorio.
 5. Abre un curso → Informes → CoursePulse — Dashboard del curso.
@@ -27,6 +27,8 @@ Los cursos que aún no empiezan o ya terminaron se etiquetan fuera de fechas; no
 
 ## Permisos
 
+Para el panel externo y roles de seguimiento por categoría, consulta [ANALISTA_ES.md](ANALISTA_ES.md).
+
 `report/coursepulse:view`: docentes, docentes editores y gestores.
 `report/coursepulse:export`: docentes editores y gestores.
 `report/coursepulse:viewips`: gestores por defecto. Puedes asignarlo a otro rol según tu organización.
@@ -41,7 +43,7 @@ Las fechas filtran eventos y duración, no el avance histórico. El avance mostr
 
 Completar una actividad no implica aprobarla. Un tiempo de cero puede corresponder a un solo evento o a registros eliminados. El riesgo de abandono necesita revisión humana.
 
-## Actualizar desde 0.1.0
+## Actualizar desde versiones anteriores
 
 Sube el nuevo ZIP como actualización del plugin existente y completa Administración del sitio → Notificaciones. Después purga las cachés en Administración del sitio → Desarrollo → Purgar cachés para recargar estilos y traducciones. No desinstales el plugin para actualizar.
 

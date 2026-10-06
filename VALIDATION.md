@@ -4,7 +4,10 @@ Date: 2026-10-06.
 
 - Four new PHPUnit tests cover category/subcategory scope, sibling rejection, hidden-course exclusion, course prohibitions, pagination, report-only access without enrolment or course content capability, independent student access, and separate-group summary suppression.
 - Previous 0.2 CI installation, PHP lint and Moodle validation passed; PHPUnit stopped before tests because runner locale en_AU.UTF-8 was missing. This release adds locale generation.
-- Complete 0.3 CI and staging browser checks pending at packaging time. No stable or Marketplace certification implied.
+- All 17 PHP files pass PHP 8.3.6 syntax checks; ZIP integrity checked.
+- GitHub Actions run 37538146089 for commit 43aad609414f686e162f6112d8a019e5066e7c1c: all four jobs passed (Moodle 5.0/5.1 × MySQL 8.4/PostgreSQL 16). Each job ran 13 tests with 56 assertions, plus syntax and Moodle plugin validation.
+- PHPUnit reports one notice in the pre-existing XLSX regression test. The runner does not print its detail; investigate before stable release. No failed assertions or errors.
+- Actual Moodle-theme browser checks, upgrade-role behaviour and large-category performance remain pending. No stable or Marketplace certification implied.
 
 ## Previous release validation
 

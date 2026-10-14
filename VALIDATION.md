@@ -4,7 +4,10 @@ Date: 2026-10-14.
 
 - All 19 PHP files pass PHP 8.3.6 syntax checks.
 - Added category XLSX numeric percentage/unavailable-cell checks, PDF output and pagination/Unicode/HTML-escaping checks, and independent category export permission/prohibition tests.
-- Native PDF visual review and full Moodle CI matrix pending during implementation; update this record before packaging.
+- GitHub Actions run 38614498793, commit 58fc9dbcf11b9e247ed2bf357672268c4c42043e: all four jobs passed (Moodle 5.0/5.1 × MySQL 8.4/PostgreSQL 16). Each ran 18 tests and 75 assertions, plus PHP syntax and Moodle plugin validation.
+- Native Moodle 5.0 TCPDF exercised locally with PHP 8.3.6: course and category PDFs generated, all six sample pages rendered and visually inspected. Unicode names, repeated table headings, page numbering, final rows and elapsed duration over 24 hours verified by PDF text extraction.
+- PHPUnit reports two notices in Excel tests (one notice existed before this release). The runner does not print details; investigate before a stable release. No failed assertions or errors.
+- Browser button/download checks in the deployed theme, upgrade role configuration and load benchmarks remain pending. No stable or Marketplace certification implied.
 
 ## Previous release validation
 

@@ -4,7 +4,10 @@ Date: 2026-10-14.
 
 - New regression checks complete category export with 27 courses, including a descendant course and full enrolment totals, independent of requested page. Sibling and hidden courses stay excluded.
 - Category XLSX metadata reports exported course count instead of a screen page number. Existing PDF pagination tests remain applicable to longer reports.
-- Full Moodle CI matrix pending at implementation time.
+- Added complete course export regression with 27 learners, name filtering and individual selection; both course PDF and XLSX share this export roster.
+- GitHub Actions run 38623717512 for commit a682579a355bbb21a293d0fbd68e3f3d071a092b: all four Moodle 5.0/5.1 × MySQL 8.4/PostgreSQL 16 jobs passed. Each ran 20 tests and 84 assertions, PHP syntax checks and Moodle plugin validation.
+- Two pre-existing Excel-test notices remain documented in the previous validation record. No failed assertions or errors.
+- Category exports have no pagination cutoff; course learner exports retain an explicit 5,000-learner bound, with a clear error rather than a partial file. Browser checks and large-category performance benchmarks remain pending.
 
 ## Previous release validation
 

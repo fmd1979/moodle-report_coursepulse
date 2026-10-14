@@ -141,6 +141,14 @@ class report {
         }
         return ['rows' => $rows, 'matched' => $matched, 'summary' => $summary];
     }
+    /** Complete learner selection shared by course Excel and PDF, never a silent partial page. */
+    public function export_roster(string $risk, string $search, int $userid = 0): array {
+        $data = $this->roster($userid ? '' : $risk, $userid ? '' : $search, 0, 5000, $userid);
+        if ($data['matched'] > 5000) {
+            throw new \moodle_exception('exportlimit', 'report_coursepulse');
+        }
+        return $data;
+    }
     /** Estimate sessions from real user events in this course, for a bounded page of learners. */
     public function engagement(array $userids, int $since, int $until): array {
         global $DB;

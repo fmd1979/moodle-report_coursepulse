@@ -43,6 +43,7 @@ $PAGE->set_heading(get_string('overview', 'report_coursepulse'));
 if ($export) {
     require_capability('report/coursepulse:exportoverview', $context);
     require_sesskey();
+    \core_php_time_limit::raise(300);
 }
 $data = \report_coursepulse\local\overview::page_data($categoryid, $page, $export);
 if ($export) {
@@ -51,7 +52,7 @@ if ($export) {
         \report_coursepulse\local\excel::build_overview($category, $data, $page)->close();
     } else {
         \report_coursepulse\local\pdf_export::overview($category, $data, $page)->Output(
-            'coursepulse_category_' . $categoryid . '_page_' . ($page + 1) . '.pdf', 'D');
+            'coursepulse_category_' . $categoryid . '.pdf', 'D');
     }
     exit;
 }
@@ -68,7 +69,7 @@ if (has_capability('report/coursepulse:exportoverview', $context)) {
     echo html_writer::start_div('coursepulse-downloads mb-3');
     foreach (['xlsx' => 'exportoverviewexcel', 'pdf' => 'exportoverviewpdf'] as $format => $label) {
         $download = new moodle_url('/report/coursepulse/overview.php', ['categoryid' => $categoryid,
-            'page' => $page, 'export' => 1, 'format' => $format, 'sesskey' => sesskey()]);
+            'export' => 1, 'format' => $format, 'sesskey' => sesskey()]);
         echo html_writer::link($download, get_string($label, 'report_coursepulse'),
             ['class' => $format === 'xlsx' ? 'btn btn-primary' : 'btn btn-secondary']);
     }

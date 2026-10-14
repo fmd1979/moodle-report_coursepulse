@@ -161,4 +161,24 @@ final class report_test extends \advanced_testcase {
         $this->assertNull($rows[$student->id]->progress);
     }
 
+    /** PDF and Excel share a complete filtered roster, including learners beyond page one. */
+    public function test_complete_export_roster_and_filters(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $g = $this->getDataGenerator();
+        $course = $g->create_course();
+        $ids = [];
+        for ($i = 0; $i < 27; $i++) {
+            $student = $g->create_user(['firstname' => 'Exportstudent' . $i, 'lastname' => 'Sample']);
+            $g->enrol_user($student->id, $course->id, 'student');
+            $ids[] = (int)$student->id;
+        }
+        $r = new report($course, 0);
+        $this->assertCount(2, $r->roster('', '', 1, 25)['rows']);
+        $data = $r->export_roster('', '');
+        $this->assertEqualsCanonicalizing($ids, array_keys($data['rows']));
+        $this->assertCount(1, $r->export_roster('', 'Exportstudent26')['rows']);
+        $this->assertSame([$ids[26]], array_keys($r->export_roster('', '', $ids[26])['rows']));
+    }
+
 }

@@ -52,6 +52,7 @@ if ($export) {
         require_capability('report/coursepulse:viewstudents', $context);
     }
     require_sesskey();
+    \core_php_time_limit::raise(300);
 }
 $today = usergetmidnight(time());
 $from = isset($_GET['from']) && is_array($_GET['from']) ? $today - 29 * DAYSECS :
@@ -92,11 +93,9 @@ if ($from < 0 || $to < $from || $to - $from > 90 * DAYSECS || $to > $today) {
 $form->set_data((object)$params);
 $until = min(time() + 1, $to + DAYSECS);
 $size = 25;
-$allforexcel = $export && $exportformat === 'xlsx';
-$roster = $report->roster($userid ? '' : $risk, $userid ? '' : $search, $userid || $allforexcel ? 0 : $page, $viewstudents ? ($allforexcel ? 5000 : $size) : 0, $userid);
-if ($allforexcel && $roster['matched'] > 5000) {
-    throw new moodle_exception('excellimit', 'report_coursepulse');
-}
+$allforexport = $export && $viewstudents && in_array($exportformat, ['xlsx', 'pdf'], true);
+$roster = $allforexport ? $report->export_roster($risk, $search, $userid) :
+    $report->roster($userid ? '' : $risk, $userid ? '' : $search, $userid ? 0 : $page, $viewstudents ? $size : 0, $userid);
 if ($userid && !isset($roster['rows'][$userid])) {
     throw new moodle_exception('notstudent', 'report_coursepulse');
 }
@@ -123,10 +122,10 @@ if ($export && $exportformat === 'pdf') {
         'page' => $page, 'userid' => $userid,
         'group' => $group ? groups_get_group_name($group) : get_string('all')];
     \report_coursepulse\local\pdf_export::course($course, $roster, $engagement, $filters, $activities, $viewstudents)->Output(
-        'coursepulse_' . $id . ($userid ? '_student_' . $userid : '_page_' . ($page + 1)) . '.pdf', 'D');
+        'coursepulse_' . $id . ($userid ? '_student_' . $userid : '_complete') . '.pdf', 'D');
     exit;
 }
-if ($allforexcel) {
+if ($export && $exportformat === 'xlsx') {
     $book = \report_coursepulse\local\excel::build($course, $roster, $engagement,
         ['from' => $from, 'to' => $to, 'risk' => $risks[$risk], 'search' => $search]);
     $book->close();

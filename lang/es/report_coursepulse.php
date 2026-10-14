@@ -96,9 +96,9 @@ $string['followup'] = 'Matrículas que requieren seguimiento por curso';
 $string['noauthorisedcourses'] = 'No hay cursos autorizados en esta categoría.';
 
 $string['coursepulse:exportoverview'] = 'Exportar resúmenes de categoría a Excel y PDF';
-$string['exportoverviewexcel'] = 'Descargar Excel - esta página';
-$string['exportoverviewpdf'] = 'Descargar PDF - esta página';
-$string['exportpdf'] = 'Descargar PDF - esta página';
+$string['exportoverviewexcel'] = 'Descargar Excel - categoría completa';
+$string['exportoverviewpdf'] = 'Descargar PDF - reporte completo';
+$string['exportpdf'] = 'Descargar PDF - reporte completo';
 $string['exportstudentpdf'] = 'Descargar PDF del estudiante';
 $string['generatedat'] = 'Generado el';
 $string['exportcourses'] = 'Cursos';
@@ -106,5 +106,9 @@ $string['courseid'] = 'ID del curso';
 $string['coursename'] = 'Nombre del curso';
 $string['exportgroup'] = 'Grupo';
 $string['exportvalue'] = 'Valor';
-$string['pdfscope'] = 'Las tarjetas y la gráfica de estado resumen todo el curso/grupo autorizado. Las filas de estudiantes y los tiempos corresponden solo a la página filtrada actual (hasta 25 estudiantes). El avance es actual; las fechas filtran eventos y tiempos. No se exportan IP.';
+$string['pdfscope'] = 'Las tarjetas y la gráfica de estado resumen todo el curso/grupo autorizado. Las filas de estudiantes y los tiempos incluyen todos los estudiantes autorizados que coinciden con los filtros (hasta 5.000). El avance es actual; las fechas filtran eventos y tiempos. No se exportan IP.';
 $string['pdfstudentscope'] = 'Las tarjetas y la gráfica de estado resumen todo el curso/grupo autorizado. Las métricas individuales y el detalle de actividades corresponden solo al estudiante autorizado seleccionado. El avance es actual; las fechas filtran eventos y tiempos. No se exportan IP.';
+
+$string['categoryexportscope'] = 'Incluye todos los cursos autorizados de esta categoría y sus subcategorías, sin límite de paginación. Los totales se calculan sobre todos los cursos incluidos y cuentan matrículas, no estudiantes únicos. Los cursos que requieren seleccionar un grupo se muestran sin métricas y no se suman en los totales.';
+$string['exportcoursecount'] = 'Cursos incluidos';
+$string['exportlimit'] = 'La selección supera 5.000 estudiantes. Filtra por grupo, nombre o estado para exportar el reporte completo de una selección menor; no se ha generado un reporte parcial.';

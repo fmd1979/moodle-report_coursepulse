@@ -122,4 +122,31 @@ final class overview_test extends \advanced_testcase {
         overview::page_data($category->id, 0, true);
     }
 
+    /** Complete category exports include off-page and descendant courses with complete totals. */
+    public function test_complete_category_export_ignores_page(): void {
+        $this->resetAfterTest();
+        $g = $this->getDataGenerator();
+        $category = $g->create_category();
+        $child = $g->create_category(['parent' => $category->id]);
+        $other = $g->create_category();
+        $student = $g->create_user();
+        $ids = [];
+        for ($i = 0; $i < 27; $i++) {
+            $course = $g->create_course(['category' => $i == 26 ? $child->id : $category->id]);
+            $g->enrol_user($student->id, $course->id, 'student');
+            $ids[] = (int)$course->id;
+        }
+        $g->create_course(['category' => $other->id]);
+        $g->create_course(['category' => $category->id, 'visible' => 0]);
+        [$user, $role, $context] = $this->analyst($category);
+        assign_capability('report/coursepulse:exportoverview', CAP_ALLOW, $role, $context->id);
+        $this->setUser($user);
+        $this->assertCount(2, overview::page_data($category->id, 1)['rows']);
+        $data = overview::page_data($category->id, 1, true);
+        $this->assertTrue($data['allcourses']);
+        $this->assertEqualsCanonicalizing($ids, array_keys($data['rows']));
+        $this->assertSame(27, $data['totals']['total']);
+        $this->assertSame(array_keys($data['rows']), array_keys(overview::page_data($category->id, 999, true)['rows']));
+    }
+
 }

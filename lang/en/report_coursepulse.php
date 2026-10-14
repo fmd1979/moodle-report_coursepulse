@@ -96,9 +96,9 @@ $string['followup'] = 'Enrolments requiring follow-up by course';
 $string['noauthorisedcourses'] = 'No authorised courses in this category.';
 
 $string['coursepulse:exportoverview'] = 'Export category summaries to Excel and PDF';
-$string['exportoverviewexcel'] = 'Download Excel - this page';
-$string['exportoverviewpdf'] = 'Download PDF - this page';
-$string['exportpdf'] = 'Download PDF - this page';
+$string['exportoverviewexcel'] = 'Download Excel - complete category';
+$string['exportoverviewpdf'] = 'Download PDF - complete report';
+$string['exportpdf'] = 'Download PDF - complete report';
 $string['exportstudentpdf'] = 'Download student PDF';
 $string['generatedat'] = 'Generated at';
 $string['exportcourses'] = 'Courses';
@@ -106,5 +106,9 @@ $string['courseid'] = 'Course ID';
 $string['coursename'] = 'Course name';
 $string['exportgroup'] = 'Group';
 $string['exportvalue'] = 'Value';
-$string['pdfscope'] = 'Cards and status chart summarise the entire authorised course/group. Learner rows and time measurements cover only the current filtered page (up to 25 learners). Completion is current; dates apply to event/time measurements. IPs are not exported.';
+$string['pdfscope'] = 'Cards and status chart summarise the entire authorised course/group. Learner rows and time measurements include all authorised learners matching the filters (up to 5,000). Completion is current; dates apply to event/time measurements. IPs are not exported.';
 $string['pdfstudentscope'] = 'Cards and status chart summarise the entire authorised course/group. Individual metrics and activity detail cover only the selected authorised learner. Completion is current; dates apply to event/time measurements. IPs are not exported.';
+
+$string['categoryexportscope'] = 'Includes all authorised courses in this category and its subcategories, without pagination limits. Totals cover all included courses and count course enrolments, not unique students. Courses requiring group selection are listed without measurements and excluded from totals.';
+$string['exportcoursecount'] = 'Courses included';
+$string['exportlimit'] = 'The selection exceeds 5,000 learners. Filter by group, name or status to export a complete report for a smaller selection; no partial report has been generated.';

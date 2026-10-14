@@ -81,11 +81,13 @@ class pdf_export {
         }
         $doc->SetXY(12, $y + 3);
     }
-    /** Category overview snapshot, exactly the authorised visible page. */
+    /** Category snapshot with complete-category scope for exports. */
     public static function overview(\stdClass $category, array $data, int $page): \pdf {
         $doc = self::document(get_string('overview', 'report_coursepulse'), format_string($category->name));
-        $doc->writeHTML('<p><b>' . s(get_string('page')) . ': ' . ($page + 1) . '</b></p><p>' .
-            s(get_string('overviewscope', 'report_coursepulse')) . '</p>');
+        $all = !empty($data['allcourses']);
+        $doc->writeHTML('<p><b>' . s($all ? get_string('exportcoursecount', 'report_coursepulse') : get_string('page')) .
+            ': ' . ($all ? count($data['rows']) : $page + 1) . '</b></p><p>' .
+            s(get_string($all ? 'categoryexportscope' : 'overviewscope', 'report_coursepulse')) . '</p>');
         $headers = [];
         $values = [];
         foreach ($data['totals'] as $key => $value) {
@@ -112,7 +114,7 @@ class pdf_export {
         }
         return $doc;
     }
-    /** Course/group summary plus the selected page of learners or one authorised learner. No IPs. */
+    /** Course/group summary plus all filtered learners or one authorised learner. No IPs. */
     public static function course(\stdClass $course, array $roster, array $engagement, array $filters,
             array $activities = [], bool $showstudents = true): \pdf {
         $doc = self::document(get_string('pluginname', 'report_coursepulse'), format_string($course->fullname));
@@ -126,7 +128,7 @@ class pdf_export {
         }
         $doc->writeHTML(self::table([get_string('filter'), get_string('exportvalue', 'report_coursepulse')], $meta, [25, 75]));
         $doc->writeHTML('<p>' . s(get_string(empty($filters['userid']) ? 'pdfscope' : 'pdfstudentscope', 'report_coursepulse')) .
-            ' ' . s(get_string('page')) . ': ' . ((int)($filters['page'] ?? 0) + 1) . '</p>');
+            '</p>');
         $heads = [];
         $values = [];
         foreach (['total', 'active', 'warning', 'critical', 'never', 'completed'] as $key) {
@@ -138,6 +140,8 @@ class pdf_export {
         self::chart($doc, array_intersect_key($roster['summary'],
             array_flip(['active', 'warning', 'critical', 'never', 'grace', 'completed'])));
         if ($showstudents) {
+            $doc->writeHTML('<p><b>' . s(get_string('exportedstudents', 'report_coursepulse')) . ': ' .
+                count($roster['rows']) . '</b></p>');
             $rows = [];
             foreach ($roster['rows'] as $row) {
                 $m = $engagement['users'][$row->id] ?? null;

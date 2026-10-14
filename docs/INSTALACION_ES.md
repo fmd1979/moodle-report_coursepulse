@@ -3,7 +3,7 @@
 ## Instalar
 
 1. En una copia de pruebas de Moodle 5, entra como administrador.
-2. Administración del sitio → Plugins → Instalar plugins → sube `report_coursepulse-0.4.0-beta.zip`.
+2. Administración del sitio → Plugins → Instalar plugins → sube `report_coursepulse-0.4.1-beta.zip`.
 3. Comprueba el componente `report_coursepulse` y completa la actualización.
 4. Si instalas manualmente: Moodle 5.0 `report/coursepulse`; Moodle 5.1 `public/report/coursepulse`. Copia ahí el contenido del directorio `coursepulse`, sin anidar otro directorio.
 5. Abre un curso → Informes → CoursePulse — Dashboard del curso.
@@ -37,7 +37,7 @@ En grupos separados, un docente sin acceso a todos los grupos solo puede revisar
 
 ## Lectura del dashboard
 
-Las tarjetas cubren el curso/grupo completo, aun cuando filtras un nombre o estado. La tabla refleja el filtro y la página. La duración y el promedio se calculan solo para los estudiantes de esa página. El CSV y el PDF exportan esa página. El PDF incluye filtros, resumen, gráfica de estado y tabla; el PDF individual incluye también actividades por sección. Se genera con TCPDF incluido en Moodle; no necesita instalar librerías en el servidor. El botón Descargar Excel exporta todos los estudiantes que coinciden con los filtros, hasta 5.000, en dos hojas: Resumen y Estudiantes. Para selecciones mayores, filtra por grupo. Los porcentajes y duraciones son valores numéricos; puedes calcular promedios en Excel. Si se supera el límite de 100.000 eventos, los tiempos se dejan vacíos y se indica el motivo en Resumen.
+Las tarjetas cubren el curso/grupo completo, aun cuando filtras un nombre o estado. La tabla refleja el filtro y la página. La duración y el promedio se calculan solo para los estudiantes de esa página. El CSV exporta esa página. El PDF exporta todos los estudiantes filtrados, hasta 5.000. El PDF incluye filtros, resumen, gráfica de estado y tabla; el PDF individual incluye también actividades por sección. Se genera con TCPDF incluido en Moodle; no necesita instalar librerías en el servidor. El botón Descargar Excel exporta todos los estudiantes que coinciden con los filtros, hasta 5.000, en dos hojas: Resumen y Estudiantes. Para selecciones mayores, filtra por grupo. Los porcentajes y duraciones son valores numéricos; puedes calcular promedios en Excel. Si se supera el límite de 100.000 eventos, los tiempos se dejan vacíos y se indica el motivo en Resumen.
 
 Las fechas filtran eventos y duración, no el avance histórico. El avance mostrado es actual. Entra al nombre de un estudiante para ver sus actividades por sección y sus últimas IP, si tu rol tiene permiso.
 
@@ -49,7 +49,7 @@ Sube el nuevo ZIP como actualización del plugin existente y completa Administra
 
 ## Descargas por categoría
 
-En el panel externo aparecen «Descargar Excel - esta página» y «Descargar PDF - esta página». Exportan hasta 25 cursos de la página visible, con sus resúmenes, y excluyen del cálculo cursos que requieren seleccionar grupo. Los totales cuentan matrículas, no estudiantes únicos. Para el rol de analista, permitir el nuevo permiso `report/coursepulse:exportoverview` en su categoría y completar Notificaciones después de actualizar.
+En el panel externo aparecen «Descargar Excel - categoría completa» y «Descargar PDF - reporte completo». Exportan todos los cursos autorizados de la categoría y sus subcategorías, independientemente de la página visible, con sus resúmenes, y excluyen del cálculo cursos que requieren seleccionar grupo. Los totales cuentan matrículas, no estudiantes únicos. Para el rol de analista, permitir el nuevo permiso `report/coursepulse:exportoverview` en su categoría y completar Notificaciones después de actualizar.
 
 ## Desinstalar
 

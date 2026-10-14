@@ -91,11 +91,12 @@ class excel {
         }
         return $book;
     }
-    /** XLSX category snapshot; no individual learner data or IP addresses. */
+    /** XLSX category snapshot; complete exports include all authorised courses. */
     public static function build_overview(\stdClass $category, array $data, int $page): \MoodleExcelWorkbook {
         global $CFG;
         require_once($CFG->libdir . '/excellib.class.php');
-        $book = new \MoodleExcelWorkbook('coursepulse_category_' . $category->id . '_page_' . ($page + 1));
+        $all = !empty($data['allcourses']);
+        $book = new \MoodleExcelWorkbook('coursepulse_category_' . $category->id . ($all ? '' : '_page_' . ($page + 1)));
         $heading = $book->add_format(['bold' => 1, 'fg_color' => '#17365D', 'color' => '#FFFFFF', 'text_wrap' => 1]);
         $wrap = $book->add_format(['text_wrap' => 1]);
         $percent = new class extends \MoodleExcelFormat {
@@ -110,12 +111,12 @@ class excel {
         $summary->set_column(1, 1, 100);
         $summary->write_string(0, 0, get_string('overview', 'report_coursepulse'), $heading);
         $summary->write_string(0, 1, pdf_export::text(format_string($category->name)), $heading);
-        $summary->write_string(1, 0, get_string('page'));
-        $summary->write_number(1, 1, $page + 1);
+        $summary->write_string(1, 0, $all ? get_string('exportcoursecount', 'report_coursepulse') : get_string('page'));
+        $summary->write_number(1, 1, $all ? count($data['rows']) : $page + 1);
         $summary->write_string(2, 0, get_string('generatedat', 'report_coursepulse'));
         $summary->write_string(2, 1, userdate(time()));
         $summary->write_string(3, 0, get_string('excelscope', 'report_coursepulse'));
-        $summary->write_string(3, 1, get_string('overviewscope', 'report_coursepulse'), $wrap);
+        $summary->write_string(3, 1, get_string($all ? 'categoryexportscope' : 'overviewscope', 'report_coursepulse'), $wrap);
         $summary->set_row(3, 100);
         $line = 4;
         foreach ($data['totals'] as $key => $value) {

@@ -32,7 +32,7 @@ class overview {
         }
         return $result;
     }
-    /** Paginate only authorised courses in a category subtree; do not evaluate off-page rosters. */
+    /** Authorised courses in a category subtree; size zero returns the complete selection. */
     public static function courses(int $categoryid, int $page, int $size = 25): array {
         global $DB;
         $context = \context_coursecat::instance($categoryid);
@@ -52,7 +52,7 @@ class overview {
                         (!$course->visible && !has_capability('moodle/course:viewhiddencourses', $coursecontext))) {
                     continue;
                 }
-                if ($matched >= max(0, $page) * $size && count($rows) < $size) {
+                if ($size === 0 || ($matched >= max(0, $page) * $size && count($rows) < $size)) {
                     $rows[$course->id] = $course;
                 }
                 $matched++;
@@ -79,8 +79,8 @@ class overview {
         if ($export) {
             require_capability('report/coursepulse:exportoverview', \context_coursecat::instance($categoryid));
         }
-        $courses = self::courses($categoryid, $page);
-        $result = ['rows' => [], 'matched' => $courses['matched'],
+        $courses = $export ? self::courses($categoryid, 0, 0) : self::courses($categoryid, $page);
+        $result = ['rows' => [], 'allcourses' => $export, 'matched' => $courses['matched'],
             'totals' => array_fill_keys(['total', 'warning', 'critical', 'never', 'completed'], 0)];
         foreach ($courses['rows'] as $course) {
             if ($export) {

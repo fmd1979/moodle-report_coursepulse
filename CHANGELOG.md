@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.1-beta — 2026-10-14
+
+- Category Excel/PDF exports now include all authorised courses and subcategories, regardless of the visible page; totals and scope labels cover the complete category selection.
+- Course PDFs now include every filtered authorised learner (up to 5,000), matching course Excel scope. Oversized selections fail explicitly instead of silently exporting a page.
+- Keep screen pagination and permission/group/hidden-course rules. Add regression coverage with 27 courses across a category and subcategory.
+
+
 ## 0.4.0-beta — 2026-10-14
 
 - Native XLSX and PDF downloads for the authorised category page, with independent `exportoverview` capability and inherited prohibition checks.

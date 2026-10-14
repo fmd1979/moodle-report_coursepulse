@@ -21,7 +21,7 @@ final class export_test extends \advanced_testcase {
     /** Synthetic data with markup, long names and an unavailable group-scoped course. */
     private function snapshot(): array {
         $summary = ['total' => 10, 'warning' => 2, 'critical' => 1, 'never' => 1, 'completed' => 3];
-        return ['matched' => 2, 'totals' => $summary, 'rows' => [
+        return ['allcourses' => true, 'matched' => 2, 'totals' => $summary, 'rows' => [
             7 => ['course' => (object)['id' => 7, 'fullname' => '=SUM(1,1) & English'],
                 'summary' => $summary, 'progress' => 62.5],
             8 => ['course' => (object)['id' => 8, 'fullname' => 'Separate groups'],
@@ -36,7 +36,7 @@ final class export_test extends \advanced_testcase {
         $property = new \ReflectionProperty(\MoodleExcelWorkbook::class, 'objspreadsheet');
         $spread = $property->getValue($book);
         $this->assertSame(2, $spread->getSheetCount());
-        $this->assertSame(3, $spread->getSheet(0)->getCell('B2')->getValue());
+        $this->assertSame(2, $spread->getSheet(0)->getCell('B2')->getValue());
         $sheet = $spread->getSheet(1);
         $this->assertSame('s', $sheet->getCell('B2')->getDataType());
         $this->assertEqualsWithDelta(.625, $sheet->getCell('D2')->getValue(), .00001);

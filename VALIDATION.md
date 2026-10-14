@@ -1,3 +1,13 @@
+# Validation record — 0.4.1-beta
+
+Date: 2026-10-14.
+
+- New regression checks complete category export with 27 courses, including a descendant course and full enrolment totals, independent of requested page. Sibling and hidden courses stay excluded.
+- Category XLSX metadata reports exported course count instead of a screen page number. Existing PDF pagination tests remain applicable to longer reports.
+- Full Moodle CI matrix pending at implementation time.
+
+## Previous release validation
+
 # Validation record — 0.4.0-beta
 
 Date: 2026-10-14.

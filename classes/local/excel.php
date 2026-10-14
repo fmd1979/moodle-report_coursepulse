@@ -91,4 +91,68 @@ class excel {
         }
         return $book;
     }
+    /** XLSX category snapshot; no individual learner data or IP addresses. */
+    public static function build_overview(\stdClass $category, array $data, int $page): \MoodleExcelWorkbook {
+        global $CFG;
+        require_once($CFG->libdir . '/excellib.class.php');
+        $book = new \MoodleExcelWorkbook('coursepulse_category_' . $category->id . '_page_' . ($page + 1));
+        $heading = $book->add_format(['bold' => 1, 'fg_color' => '#17365D', 'color' => '#FFFFFF', 'text_wrap' => 1]);
+        $wrap = $book->add_format(['text_wrap' => 1]);
+        $percent = new class extends \MoodleExcelFormat {
+            /** Use native XLSX numeric percentage formatting. */
+            public function set_num_format($numformat) {
+                $this->format['numberFormat']['formatCode'] = $numformat;
+            }
+        };
+        $percent->set_num_format('0.0%');
+        $summary = $book->add_worksheet(get_string('excelsummary', 'report_coursepulse'));
+        $summary->set_column(0, 0, 38);
+        $summary->set_column(1, 1, 100);
+        $summary->write_string(0, 0, get_string('overview', 'report_coursepulse'), $heading);
+        $summary->write_string(0, 1, pdf_export::text(format_string($category->name)), $heading);
+        $summary->write_string(1, 0, get_string('page'));
+        $summary->write_number(1, 1, $page + 1);
+        $summary->write_string(2, 0, get_string('generatedat', 'report_coursepulse'));
+        $summary->write_string(2, 1, userdate(time()));
+        $summary->write_string(3, 0, get_string('excelscope', 'report_coursepulse'));
+        $summary->write_string(3, 1, get_string('overviewscope', 'report_coursepulse'), $wrap);
+        $summary->set_row(3, 100);
+        $line = 4;
+        foreach ($data['totals'] as $key => $value) {
+            $summary->write_string($line, 0, get_string('summary_' . $key, 'report_coursepulse'));
+            $summary->write_number($line++, 1, $value);
+        }
+        $sheet = $book->add_worksheet(get_string('exportcourses', 'report_coursepulse'));
+        $keys = ['courseid', 'coursename', 'summary_total', 'progress', 'summary_warning',
+            'summary_critical', 'summary_never', 'summary_completed', 'measurement'];
+        foreach ($keys as $col => $key) {
+            $sheet->write_string(0, $col, get_string($key, 'report_coursepulse'), $heading);
+        }
+        $sheet->set_row(0, 42);
+        $sheet->set_column(0, 0, 12);
+        $sheet->set_column(1, 1, 65);
+        $sheet->set_column(2, 7, 22);
+        $sheet->set_column(8, 8, 60);
+        $line = 1;
+        foreach ($data['rows'] as $entry) {
+            $sheet->write_number($line, 0, $entry['course']->id);
+            $sheet->write_string($line, 1, pdf_export::text(format_string($entry['course']->fullname)), $wrap);
+            $s = $entry['summary'];
+            if ($s !== null) {
+                foreach ([2 => 'total', 4 => 'warning', 5 => 'critical', 6 => 'never', 7 => 'completed'] as $col => $key) {
+                    $sheet->write_number($line, $col, $s[$key]);
+                }
+                if ($entry['progress'] !== null) {
+                    $sheet->write_number($line, 3, $entry['progress'] / 100, $percent);
+                }
+                $sheet->write_string($line, 8, $entry['progress'] === null ?
+                    get_string('nocompletion', 'report_coursepulse') : '', $wrap);
+            } else {
+                $sheet->write_string($line, 8, get_string('choosegroup', 'report_coursepulse'), $wrap);
+            }
+            $sheet->set_row($line++, 38);
+        }
+        return $book;
+    }
+
 }

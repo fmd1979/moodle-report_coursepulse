@@ -43,12 +43,14 @@ $risk = optional_param('risk', '', PARAM_ALPHA);
 $search = trim(optional_param('search', '', PARAM_TEXT));
 $export = optional_param('export', false, PARAM_BOOL);
 $exportformat = optional_param('format', 'csv', PARAM_ALPHA);
-if (!in_array($exportformat, ['csv', 'xlsx'], true)) {
+if (!in_array($exportformat, ['csv', 'xlsx', 'pdf'], true)) {
     throw new moodle_exception('invalidparameter');
 }
 if ($export) {
     require_capability('report/coursepulse:export', $context);
-    require_capability('report/coursepulse:viewstudents', $context);
+    if ($exportformat !== 'pdf') {
+        require_capability('report/coursepulse:viewstudents', $context);
+    }
     require_sesskey();
 }
 $today = usergetmidnight(time());
@@ -102,6 +104,28 @@ $engagement = $report->engagement($viewstudents ? array_keys($roster['rows']) : 
 $formatduration = static function($seconds) {
     return sprintf('%02d:%02d:%02d', intdiv((int)$seconds, 3600), intdiv((int)$seconds % 3600, 60), (int)$seconds % 60);
 };
+if ($export && $exportformat === 'pdf') {
+    $activities = [];
+    if ($userid) {
+        $completion = new completion_info($course);
+        foreach ($report->modules as $cm) {
+            $state = $completion->get_data($cm, false, $userid)->completionstate;
+            $key = match ((int)$state) {
+                COMPLETION_COMPLETE => 'complete', COMPLETION_COMPLETE_PASS => 'passed',
+                COMPLETION_COMPLETE_FAIL => 'failed', default => 'pending',
+            };
+            $activities[] = [get_section_name($course, $cm->sectionnum),
+                format_string($cm->name, true, ['context' => context_module::instance($cm->id)]),
+                get_string($key, 'report_coursepulse')];
+        }
+    }
+    $filters = ['from' => $from, 'to' => $to, 'risk' => $risks[$risk], 'search' => $search,
+        'page' => $page, 'userid' => $userid,
+        'group' => $group ? groups_get_group_name($group) : get_string('all')];
+    \report_coursepulse\local\pdf_export::course($course, $roster, $engagement, $filters, $activities, $viewstudents)->Output(
+        'coursepulse_' . $id . ($userid ? '_student_' . $userid : '_page_' . ($page + 1)) . '.pdf', 'D');
+    exit;
+}
 if ($allforexcel) {
     $book = \report_coursepulse\local\excel::build($course, $roster, $engagement,
         ['from' => $from, 'to' => $to, 'risk' => $risks[$risk], 'search' => $search]);
@@ -132,6 +156,13 @@ echo $OUTPUT->heading(get_string('pluginname', 'report_coursepulse'));
 if (has_capability('report/coursepulse:viewoverview', context_coursecat::instance($course->category))) {
     echo html_writer::link(new moodle_url('/report/coursepulse/overview.php', ['categoryid' => $course->category]),
         get_string('overview', 'report_coursepulse'), ['class' => 'btn btn-secondary mb-3']);
+}
+if (has_capability('report/coursepulse:export', $context)) {
+    $pdfurl = new moodle_url('/report/coursepulse/index.php', $params +
+        ['page' => $page, 'userid' => $userid, 'export' => 1, 'format' => 'pdf', 'sesskey' => sesskey()]);
+    echo html_writer::div(html_writer::link($pdfurl,
+        get_string($userid ? 'exportstudentpdf' : 'exportpdf', 'report_coursepulse'),
+        ['class' => 'btn btn-secondary']), 'coursepulse-downloads mb-3');
 }
 echo $OUTPUT->notification(get_string('methodology', 'report_coursepulse'), 'info');
 groups_print_course_menu($course, new moodle_url('/report/coursepulse/index.php', ['id' => $id]));
@@ -271,6 +302,8 @@ if ($viewstudents) {
         $excelurl = new moodle_url('/report/coursepulse/index.php', $params +
             ['userid' => $userid, 'export' => 1, 'format' => 'xlsx', 'sesskey' => sesskey()]);
         echo html_writer::link($excelurl, get_string('exportexcel', 'report_coursepulse'), ['class' => 'btn btn-primary']);
+        echo html_writer::link($pdfurl, get_string($userid ? 'exportstudentpdf' : 'exportpdf', 'report_coursepulse'),
+            ['class' => 'btn btn-secondary']);
         $exporturl = new moodle_url('/report/coursepulse/index.php', $params +
             ['page' => $page, 'userid' => $userid, 'export' => 1, 'sesskey' => sesskey()]);
         echo html_writer::link($exporturl, get_string('exportpage', 'report_coursepulse'), ['class' => 'btn btn-secondary']);

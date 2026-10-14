@@ -19,6 +19,11 @@ if (isguestuser()) {
 }
 $categoryid = max(0, optional_param('categoryid', 0, PARAM_INT));
 $page = max(0, optional_param('page', 0, PARAM_INT));
+$export = optional_param('export', false, PARAM_BOOL);
+$format = optional_param('format', 'xlsx', PARAM_ALPHA);
+if (!in_array($format, ['xlsx', 'pdf'], true)) {
+    throw new moodle_exception('invalidparameter');
+}
 $categories = \report_coursepulse\local\overview::categories();
 if (!$categories) {
     throw new required_capability_exception(context_system::instance(), 'report/coursepulse:viewoverview', 'nopermissions', '');
@@ -35,7 +40,21 @@ $PAGE->set_context($context);
 $PAGE->set_pagelayout('report');
 $PAGE->set_title(get_string('overview', 'report_coursepulse'));
 $PAGE->set_heading(get_string('overview', 'report_coursepulse'));
-$courses = \report_coursepulse\local\overview::courses($categoryid, $page);
+if ($export) {
+    require_capability('report/coursepulse:exportoverview', $context);
+    require_sesskey();
+}
+$data = \report_coursepulse\local\overview::page_data($categoryid, $page, $export);
+if ($export) {
+    $category = $DB->get_record('course_categories', ['id' => $categoryid], '*', MUST_EXIST);
+    if ($format === 'xlsx') {
+        \report_coursepulse\local\excel::build_overview($category, $data, $page)->close();
+    } else {
+        \report_coursepulse\local\pdf_export::overview($category, $data, $page)->Output(
+            'coursepulse_category_' . $categoryid . '_page_' . ($page + 1) . '.pdf', 'D');
+    }
+    exit;
+}
 $options = [];
 foreach ($categories as $category) {
     $options[$category->id] = format_string($category->name, true,
@@ -45,19 +64,30 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('overview', 'report_coursepulse'));
 echo $OUTPUT->single_select(new moodle_url('/report/coursepulse/overview.php'), 'categoryid', $options, $categoryid, null);
 echo $OUTPUT->notification(get_string('overviewscope', 'report_coursepulse'), 'info');
+if (has_capability('report/coursepulse:exportoverview', $context)) {
+    echo html_writer::start_div('coursepulse-downloads mb-3');
+    foreach (['xlsx' => 'exportoverviewexcel', 'pdf' => 'exportoverviewpdf'] as $format => $label) {
+        $download = new moodle_url('/report/coursepulse/overview.php', ['categoryid' => $categoryid,
+            'page' => $page, 'export' => 1, 'format' => $format, 'sesskey' => sesskey()]);
+        echo html_writer::link($download, get_string($label, 'report_coursepulse'),
+            ['class' => $format === 'xlsx' ? 'btn btn-primary' : 'btn btn-secondary']);
+    }
+    echo html_writer::end_div();
+}
 $table = new html_table();
 $table->head = [get_string('course'), get_string('summary_total', 'report_coursepulse'),
     get_string('progress', 'report_coursepulse'), get_string('summary_warning', 'report_coursepulse'),
     get_string('summary_critical', 'report_coursepulse'), get_string('summary_never', 'report_coursepulse'),
     get_string('summary_completed', 'report_coursepulse')];
-$totals = array_fill_keys(['total', 'warning', 'critical', 'never', 'completed'], 0);
+$totals = $data['totals'];
 $chartlabels = [];
 $chartvalues = [];
-foreach ($courses['rows'] as $course) {
+foreach ($data['rows'] as $entry) {
+    $course = $entry['course'];
     $coursecontext = context_course::instance($course->id);
     $name = html_writer::link(new moodle_url('/report/coursepulse/index.php', ['id' => $course->id]),
         format_string($course->fullname, true, ['context' => $coursecontext]));
-    $summary = \report_coursepulse\local\overview::summary($course);
+    $summary = $entry['summary'];
     if ($summary === null) {
         $table->data[] = [$name, get_string('choosegroup', 'report_coursepulse'), '—', '—', '—', '—', '—'];
         continue;
@@ -65,9 +95,6 @@ foreach ($courses['rows'] as $course) {
     $measured = array_sum($summary['bands']);
     $table->data[] = [$name, $summary['total'], $measured ? round($summary['progresssum'] / $measured, 1) . '%' : '—',
         $summary['warning'], $summary['critical'], $summary['never'], $summary['completed']];
-    foreach ($totals as $key => $value) {
-        $totals[$key] += $summary[$key];
-    }
     $chartlabels[] = format_string($course->shortname, true, ['context' => $coursecontext]);
     $chartvalues[] = $summary['warning'] + $summary['critical'] + $summary['never'];
 }
@@ -91,8 +118,8 @@ if ($chartlabels) {
     echo $OUTPUT->render($chart);
 }
 echo html_writer::div(html_writer::table($table), 'table-responsive');
-if (!$courses['matched']) {
+if (!$data['matched']) {
     echo $OUTPUT->notification(get_string('noauthorisedcourses', 'report_coursepulse'), 'info');
 }
-echo $OUTPUT->paging_bar($courses['matched'], $page, 25, $url);
+echo $OUTPUT->paging_bar($data['matched'], $page, 25, $url);
 echo $OUTPUT->footer();

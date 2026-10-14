@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0-beta — 2026-10-14
+
+- Native XLSX and PDF downloads for the authorised category page, with independent `exportoverview` capability and inherited prohibition checks.
+- Native Moodle TCPDF export for course pages and individual student activity details, preserving dates, group and learner filters; summaries remain course/group scoped.
+- Print-friendly landscape A4 layout, repeated table headings, Unicode text, page numbering and native vector status chart. No external service or IP export.
+- Shared category snapshot keeps screen, totals and downloaded course rows consistent. Summary-only roles can export summaries but no individual learner data.
+- Added typed category XLSX, PDF escaping/pagination and category export permission regression tests.
+
+
 ## 0.3.0-beta — 2026-10-06
 
 - External category overview with authorised subcategory courses, paginated comparisons and follow-up chart.

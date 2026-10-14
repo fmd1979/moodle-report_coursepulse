@@ -74,4 +74,31 @@ class overview {
         }
         return (new report($course, 0))->roster('', '', 0, 0)['summary'];
     }
+    /** Shared snapshot for the screen and exports, with independent category export checks. */
+    public static function page_data(int $categoryid, int $page, bool $export = false): array {
+        if ($export) {
+            require_capability('report/coursepulse:exportoverview', \context_coursecat::instance($categoryid));
+        }
+        $courses = self::courses($categoryid, $page);
+        $result = ['rows' => [], 'matched' => $courses['matched'],
+            'totals' => array_fill_keys(['total', 'warning', 'critical', 'never', 'completed'], 0)];
+        foreach ($courses['rows'] as $course) {
+            if ($export) {
+                // A child/category/course prohibition must not be bypassed via its parent export.
+                require_capability('report/coursepulse:exportoverview', \context_course::instance($course->id));
+            }
+            $summary = self::summary($course);
+            $progress = null;
+            if ($summary !== null) {
+                $measured = array_sum($summary['bands']);
+                $progress = $measured ? round($summary['progresssum'] / $measured, 1) : null;
+                foreach ($result['totals'] as $key => $value) {
+                    $result['totals'][$key] += $summary[$key];
+                }
+            }
+            $result['rows'][$course->id] = ['course' => $course, 'summary' => $summary, 'progress' => $progress];
+        }
+        return $result;
+    }
+
 }

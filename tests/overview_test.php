@@ -97,4 +97,29 @@ final class overview_test extends \advanced_testcase {
         $this->assertArrayNotHasKey($course->id, overview::courses($category->id, 0)['rows']);
         $this->assertNull(overview::summary($separate));
     }
+    /** Category export cannot be enabled just by knowing a report URL. */
+    public function test_category_export_requires_own_permission(): void {
+        $this->resetAfterTest();
+        $category = $this->getDataGenerator()->create_category();
+        $this->analyst($category);
+        $this->expectException(\required_capability_exception::class);
+        overview::page_data($category->id, 0, true);
+    }
+    /** Summary exports need no learner permission; course prohibitions still block them. */
+    public function test_category_export_role_and_course_prohibition(): void {
+        $this->resetAfterTest();
+        $g = $this->getDataGenerator();
+        $category = $g->create_category();
+        $course = $g->create_course(['category' => $category->id]);
+        [$user, $role, $context] = $this->analyst($category);
+        assign_capability('report/coursepulse:exportoverview', CAP_ALLOW, $role, $context->id);
+        $this->setUser($user);
+        $this->assertCount(1, overview::page_data($category->id, 0, true)['rows']);
+        $this->assertFalse(has_capability('report/coursepulse:viewstudents', \context_course::instance($course->id)));
+        assign_capability('report/coursepulse:exportoverview', CAP_PROHIBIT, $role, \context_course::instance($course->id)->id);
+        $this->setUser($user);
+        $this->expectException(\required_capability_exception::class);
+        overview::page_data($category->id, 0, true);
+    }
+
 }

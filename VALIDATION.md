@@ -1,3 +1,13 @@
+# Validation record — 0.4.0-beta
+
+Date: 2026-10-14.
+
+- All 19 PHP files pass PHP 8.3.6 syntax checks.
+- Added category XLSX numeric percentage/unavailable-cell checks, PDF output and pagination/Unicode/HTML-escaping checks, and independent category export permission/prohibition tests.
+- Native PDF visual review and full Moodle CI matrix pending during implementation; update this record before packaging.
+
+## Previous release validation
+
 # Validation record — 0.3.0-beta
 
 Date: 2026-10-06.

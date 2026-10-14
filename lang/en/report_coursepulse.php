@@ -94,3 +94,17 @@ $string['overviewscope'] = 'Includes authorised courses in this category and its
 $string['choosegroup'] = 'Open report and select an authorised group';
 $string['followup'] = 'Enrolments requiring follow-up by course';
 $string['noauthorisedcourses'] = 'No authorised courses in this category.';
+
+$string['coursepulse:exportoverview'] = 'Export category summaries to Excel and PDF';
+$string['exportoverviewexcel'] = 'Download Excel - this page';
+$string['exportoverviewpdf'] = 'Download PDF - this page';
+$string['exportpdf'] = 'Download PDF - this page';
+$string['exportstudentpdf'] = 'Download student PDF';
+$string['generatedat'] = 'Generated at';
+$string['exportcourses'] = 'Courses';
+$string['courseid'] = 'Course ID';
+$string['coursename'] = 'Course name';
+$string['exportgroup'] = 'Group';
+$string['exportvalue'] = 'Value';
+$string['pdfscope'] = 'Cards and status chart summarise the entire authorised course/group. Learner rows and time measurements cover only the current filtered page (up to 25 learners). Completion is current; dates apply to event/time measurements. IPs are not exported.';
+$string['pdfstudentscope'] = 'Cards and status chart summarise the entire authorised course/group. Individual metrics and activity detail cover only the selected authorised learner. Completion is current; dates apply to event/time measurements. IPs are not exported.';

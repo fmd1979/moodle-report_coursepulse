@@ -94,3 +94,17 @@ $string['overviewscope'] = 'Incluye los cursos autorizados de esta categoría y 
 $string['choosegroup'] = 'Abrir reporte y seleccionar un grupo autorizado';
 $string['followup'] = 'Matrículas que requieren seguimiento por curso';
 $string['noauthorisedcourses'] = 'No hay cursos autorizados en esta categoría.';
+
+$string['coursepulse:exportoverview'] = 'Exportar resúmenes de categoría a Excel y PDF';
+$string['exportoverviewexcel'] = 'Descargar Excel - esta página';
+$string['exportoverviewpdf'] = 'Descargar PDF - esta página';
+$string['exportpdf'] = 'Descargar PDF - esta página';
+$string['exportstudentpdf'] = 'Descargar PDF del estudiante';
+$string['generatedat'] = 'Generado el';
+$string['exportcourses'] = 'Cursos';
+$string['courseid'] = 'ID del curso';
+$string['coursename'] = 'Nombre del curso';
+$string['exportgroup'] = 'Grupo';
+$string['exportvalue'] = 'Valor';
+$string['pdfscope'] = 'Las tarjetas y la gráfica de estado resumen todo el curso/grupo autorizado. Las filas de estudiantes y los tiempos corresponden solo a la página filtrada actual (hasta 25 estudiantes). El avance es actual; las fechas filtran eventos y tiempos. No se exportan IP.';
+$string['pdfstudentscope'] = 'Las tarjetas y la gráfica de estado resumen todo el curso/grupo autorizado. Las métricas individuales y el detalle de actividades corresponden solo al estudiante autorizado seleccionado. El avance es actual; las fechas filtran eventos y tiempos. No se exportan IP.';

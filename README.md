@@ -2,7 +2,7 @@
 
 A read-only Moodle course report for teachers and coordinators. It combines current activity completion, inactivity indicators and estimated session time with permission-controlled connection IP history.
 
-**Release:** 0.3.0-beta. **Component:** `report_coursepulse`. **Author:** Franklin David Moya Dávila / SiteEcuador. **License:** GNU GPL v3 or later.
+**Release:** 0.4.0-beta. **Component:** `report_coursepulse`. **Author:** Franklin David Moya Dávila / SiteEcuador. **License:** GNU GPL v3 or later.
 
 ## Features
 
@@ -15,6 +15,7 @@ A read-only Moodle course report for teachers and coordinators. It combines curr
 - Daily event trend for the displayed learners.
 - Date (maximum 90 days), name, group and status filters; 25 learners per page.
 - Native Excel (.xlsx) export of all filtered learners (up to 5,000), with summary and learner sheets, typed percentages and elapsed durations. CSV export of the displayed page remains available. Both exports protect against spreadsheet formula injection.
+- Category-page downloads in native Excel and PDF, with an independent category export capability. Course-page/student PDF includes filters, summary, status chart and activity detail for a selected learner. PDFs use Moodle TCPDF, without external services.
 - Latest 100 connection events and IPs available only with a separate capability.
 - English and Spanish language packs. Native Moodle charts; no third-party JavaScript or external service.
 
@@ -36,7 +37,7 @@ Teachers can view; editing teachers can export; managers can view IPs. Administr
 
 Open `/report/coursepulse/overview.php` or `index.php` without a course id. A category-assigned custom role can compare authorised courses without enrolment, teaching or admin permissions. Independent capabilities control category access, individual learner records, exports and IPs. See [docs/ANALISTA_ES.md](docs/ANALISTA_ES.md) for role and menu setup.
 
-Category cards/chart cover the current page (25 courses), counting course enrolments rather than unique students. Separate-group courses without all-groups access require a permitted group inside the course report and are excluded from category totals. Hidden courses require the core hidden-course capability. XLSX remains per course.
+Category cards/chart cover the current page (25 courses), counting course enrolments rather than unique students. Separate-group courses without all-groups access require a permitted group inside the course report and are excluded from category totals. Hidden courses require the core hidden-course capability. Category XLSX/PDF export the visible page of up to 25 courses; the category export permission is independent of learner access. Course XLSX exports all filtered learners (up to 5,000); course PDF exports the visible filtered page of up to 25 learners or one selected learner.
 
 ## Interpretation and performance
 

@@ -18,6 +18,6 @@ git fetch origin\n# El bundle conserva el historial local original; el repositor
 
 La URL corresponde al repositorio público del proyecto. Usa tu autenticación GitHub habitual. No compartas tokens por el chat.
 
-Habilita Issues y revisa Actions. La configuración CI contiene una matriz Moodle 5.0/5.1 con MySQL y PostgreSQL. Debe pasar antes de anunciar esas combinaciones como verificadas.
+Habilita Issues y revisa Actions. La configuración CI contiene una matriz Moodle 5.0–5.3 con PHP 8.3, MySQL y PostgreSQL, más Moodle 5.3 con PHP 8.4 (PostgreSQL 17 para 5.3). Debe pasar antes de anunciar esas combinaciones como verificadas.
 
 Publica una GitHub Release beta y adjunta el ZIP instalable. Las versiones estables posteriores deben llevar su propio incremento en `version.php`, changelog y etiqueta. Conserva el nombre del componente durante las actualizaciones.

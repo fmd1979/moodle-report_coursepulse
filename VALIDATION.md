@@ -2,10 +2,21 @@
 
 Date: 2026-10-15 UTC (2026-10-14 Ecuador).
 
+## Executed successfully
+
 - Official Moodle 5.3 stable branch inspected: 344c92d5bb70f37306829d7739e2710305a39c3e, version 5.3+ (Build: 20261013).
-- Expanded CI to Moodle 5.0–5.3 with PHP 8.3, plus Moodle 5.3 with PHP 8.4; both mysqli/MySQL 8.4 and PostgreSQL tested. Moodle 5.3 uses PostgreSQL 17, older branches retain PostgreSQL 16.
-- Added native chart-renderer and navigation-permission tests; avoid deprecated global navigation-node alias where the namespaced class is available. Preserve explicit chart-heading contrast for dark themes.
-- First expanded run executed all branches; the only failure was a new chart-test assertion that incorrectly expected labels in server-rendered HTML. Moodle fills chart data client-side. The test now verifies accessible containers plus serialized datasets; complete rerun pending.
+- GitHub Actions run 38683564192 for plugin commit 1a799b9e011519204467cdad5cb16052ae2311f0: all ten jobs passed, each with 22 tests and 95 assertions, plus PHP lint and Moodle plugin validation.
+- Moodle 5.0, 5.1 and 5.2 with PHP 8.3, MySQL 8.4 and PostgreSQL 16 (six combinations).
+- Moodle 5.3+ (Build: 20261013) with PHP 8.3.35 and 8.4.26, MySQL 8.4.11 and PostgreSQL 17.11 (four combinations).
+- Tests cover permissions and role/category/group boundaries, complete-category and complete-course exports, completion, log/session calculations, typed XLSX output, native PDF output/pagination, native chart containers/serialized datasets and navigation entries.
+- Navigation uses the namespaced core class when available, retaining the legacy fallback for older Moodle. Chart headings explicitly inherit the container colour to retain contrast in dark themes.
+- Plugin support declaration extended to Moodle 5.0–5.3.
+
+## Remaining checks
+
+- Two pre-existing Excel-test notices remain; no failed assertions or errors. Investigate those notices before a stable release.
+- Real-browser download/visual checks using the deployment's actual theme, including Moodle 5.3 experimental dark mode, remain pending.
+- Load benchmarks and Marketplace review/coding-standard assessment remain pending. These automated results are not Marketplace certification.
 
 ## Previous validation
 

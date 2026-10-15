@@ -25,7 +25,7 @@ Supports Moodle 5.0–5.3, including Moodle 5.3 LTS. Moodle 5.0 requires PHP 8.2
 
 1. Back up your site and install on a staging copy first.
 2. Upload the release ZIP via **Site administration → Plugins → Install plugins**.
-3. Alternatively extract its `coursepulse` directory to `report/coursepulse` (Moodle 5.0) or `public/report/coursepulse` (Moodle 5.1).
+3. Alternatively extract its `coursepulse` directory to `report/coursepulse` (Moodle 5.0) or `public/report/coursepulse` (Moodle 5.1–5.3).
 4. Run the normal Moodle upgrade through Site administration → Notifications. Do not alter core tables.
 5. Visit **Course → Reports → CoursePulse**.
 6. Configure thresholds at **Site administration → Plugins → Reports → CoursePulse**.

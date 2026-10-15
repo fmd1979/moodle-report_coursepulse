@@ -1,11 +1,11 @@
-# Moodle 5.3 LTS verification — pending execution
+# Moodle 5.3 LTS verification — 0.4.2-beta
 
 Date: 2026-10-15 UTC (2026-10-14 Ecuador).
 
 - Official Moodle 5.3 stable branch inspected: 344c92d5bb70f37306829d7739e2710305a39c3e, version 5.3+ (Build: 20261013).
 - Expanded CI to Moodle 5.0–5.3 with PHP 8.3, plus Moodle 5.3 with PHP 8.4; both mysqli/MySQL 8.4 and PostgreSQL tested. Moodle 5.3 uses PostgreSQL 17, older branches retain PostgreSQL 16.
 - Added native chart-renderer and navigation-permission tests; avoid deprecated global navigation-node alias where the namespaced class is available. Preserve explicit chart-heading contrast for dark themes.
-- Previous support declaration remains 5.0–5.1 until the new matrix completes successfully.
+- First expanded run executed all branches; the only failure was a new chart-test assertion that incorrectly expected labels in server-rendered HTML. Moodle fills chart data client-side. The test now verifies accessible containers plus serialized datasets; complete rerun pending.
 
 ## Previous validation
 

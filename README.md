@@ -2,7 +2,7 @@
 
 A read-only Moodle course report for teachers and coordinators. It combines current activity completion, inactivity indicators and estimated session time with permission-controlled connection IP history.
 
-**Release:** 0.4.1-beta. **Component:** `report_coursepulse`. **Author:** Franklin David Moya Dávila / SiteEcuador. **License:** GNU GPL v3 or later.
+**Release:** 0.4.2-beta. **Component:** `report_coursepulse`. **Author:** Franklin David Moya Dávila / SiteEcuador. **License:** GNU GPL v3 or later.
 
 ## Features
 
@@ -21,7 +21,7 @@ A read-only Moodle course report for teachers and coordinators. It combines curr
 
 ## Requirements and installation
 
-Designed for Moodle 5.0 with PHP 8.2+ and Moodle 5.1 with PHP 8.3+ and MySQL 8.4+. SQL uses Moodle DML and is designed to be portable; see VALIDATION.md for actual tested versions. Do not infer certification from declared supported versions.
+Supports Moodle 5.0–5.3, including Moodle 5.3 LTS. Moodle 5.0 requires PHP 8.2+; Moodle 5.1–5.3 requires PHP 8.3+. Moodle 5.3 also supports PHP 8.4. MySQL 8.4+ is required. PostgreSQL 17+ is required for Moodle 5.3; older branches in CI use PostgreSQL 16. SQL uses Moodle DML and is designed to be portable; see VALIDATION.md for actual tested versions. Do not infer certification from declared supported versions.
 
 1. Back up your site and install on a staging copy first.
 2. Upload the release ZIP via **Site administration → Plugins → Install plugins**.

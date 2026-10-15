@@ -3,9 +3,9 @@
 ## Instalar
 
 1. En una copia de pruebas de Moodle 5, entra como administrador.
-2. Administración del sitio → Plugins → Instalar plugins → sube `report_coursepulse-0.4.1-beta.zip`.
+2. Administración del sitio → Plugins → Instalar plugins → sube `report_coursepulse-0.4.2-beta.zip`.
 3. Comprueba el componente `report_coursepulse` y completa la actualización.
-4. Si instalas manualmente: Moodle 5.0 `report/coursepulse`; Moodle 5.1 `public/report/coursepulse`. Copia ahí el contenido del directorio `coursepulse`, sin anidar otro directorio.
+4. Si instalas manualmente: Moodle 5.0 `report/coursepulse`; Moodle 5.1–5.3 `public/report/coursepulse`. Copia ahí el contenido del directorio `coursepulse`, sin anidar otro directorio.
 5. Abre un curso → Informes → CoursePulse — Dashboard del curso.
 
 ## Preparar los datos
@@ -54,3 +54,9 @@ En el panel externo aparecen «Descargar Excel - categoría completa» y «Desca
 ## Desinstalar
 
 Administración del sitio → Plugins → Vista general de plugins → CoursePulse → Desinstalar. El plugin no borra matrículas, calificaciones, finalización ni registros originales.
+
+## Moodle 5.3 LTS
+
+Usar PHP 8.3 o 8.4, MySQL 8.4 o superior (PostgreSQL 17 o superior si se usa PostgreSQL), extensión sodium y `max_input_vars >= 5000`. El directorio del plugin es `public/report/coursepulse`; el directorio público que debe servir el servidor web es `public/`. La actualización de CoursePulse registra soporte hasta Moodle 5.3; las versiones y combinaciones efectivamente ejecutadas están en VALIDATION.md.
+
+Pruebas automáticas no sustituyen la revisión visual con el tema activo ni las mediciones de carga del servidor.

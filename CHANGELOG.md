@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.2-beta — 2026-10-15 UTC
+
+- Extend compatibility verification through Moodle 5.3 LTS, including PHP 8.3 and 8.4, MySQL 8.4 and PostgreSQL 17. Retain Moodle 5.0–5.2 regression coverage.
+- Select the namespaced navigation API when available, with a fallback for Moodle 5.0.
+- Preserve chart heading contrast in dark themes; add native chart-renderer/dataset and navigation permission tests.
+- Update server requirements and manual installation instructions for Moodle 5.3.
+
+
 ## 0.4.1-beta — 2026-10-14
 
 - Category Excel/PDF exports now include all authorised courses and subcategories, regardless of the visible page; totals and scope labels cover the complete category selection.

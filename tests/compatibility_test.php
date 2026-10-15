@@ -16,7 +16,7 @@ namespace report_coursepulse;
 defined('MOODLE_INTERNAL') || die();
 /** Exercise the native chart renderer and navigation API across Moodle 5 branches. */
 final class compatibility_test extends \advanced_testcase {
-    /** Accessible chart tables must render alongside the native canvas in each supported branch. */
+    /** Native renderer exposes accessible containers and serializes datasets for client-side charts. */
     public function test_native_chart_rendering(): void {
         global $PAGE, $OUTPUT;
         $this->resetAfterTest();
@@ -28,16 +28,22 @@ final class compatibility_test extends \advanced_testcase {
         $pie->add_series(new \core\chart_series('Learners', [2, 3]));
         $pie->set_labels(['Recent access', 'Follow-up']);
         $html = $OUTPUT->render($pie);
-        $this->assertStringContainsString('Recent access', $html);
-        $this->assertStringContainsString('Follow-up', $html);
+        $this->assertStringContainsString('chart-image', $html);
+        $this->assertStringContainsString('aria-describedby', $html);
+        $data = json_encode($pie, JSON_THROW_ON_ERROR);
+        $this->assertStringContainsString('Recent access', $data);
+        $this->assertStringContainsString('Follow-up', $data);
         $bar = new \core\chart_bar();
         $bar->set_horizontal(true);
         $bar->add_series(new \core\chart_series('Progress', [1, 4]));
         $bar->set_labels(['Pending', 'Completed']);
         $bar->get_xaxis(0, true)->set_stepsize(1);
         $html = $OUTPUT->render($bar);
-        $this->assertStringContainsString('Pending', $html);
-        $this->assertStringContainsString('Completed', $html);
+        $this->assertStringContainsString('chart-image', $html);
+        $this->assertStringContainsString('chart-table-data', $html);
+        $data = json_encode($bar, JSON_THROW_ON_ERROR);
+        $this->assertStringContainsString('Pending', $data);
+        $this->assertStringContainsString('Completed', $data);
     }
     /** Native navigation nodes work with both global and namespaced Moodle APIs. */
     public function test_navigation_entries_and_permissions(): void {

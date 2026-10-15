@@ -18,7 +18,7 @@ function report_coursepulse_extend_navigation_course($navigation, $course, $cont
     if (has_capability('report/coursepulse:view', $context)) {
         $navigation->add(get_string('pluginname', 'report_coursepulse'),
             new moodle_url('/report/coursepulse/index.php', ['id' => $course->id]),
-            navigation_node::TYPE_SETTING, null, null, new pix_icon('i/report', ''));
+            report_coursepulse_navigation_setting_type(), null, null, new pix_icon('i/report', ''));
     }
 }
 
@@ -27,14 +27,20 @@ function report_coursepulse_extend_navigation_category_settings($navigation, $co
     if (has_capability('report/coursepulse:viewoverview', $context)) {
         $navigation->add(get_string('overview', 'report_coursepulse'),
             new moodle_url('/report/coursepulse/overview.php', ['categoryid' => $context->instanceid]),
-            navigation_node::TYPE_SETTING, null, 'coursepulseoverview', new pix_icon('i/report', ''));
+            report_coursepulse_navigation_setting_type(), null, 'coursepulseoverview', new pix_icon('i/report', ''));
     }
 }
 /** Front-page report link. A direct custom-menu URL also works with Boost themes. */
 function report_coursepulse_extend_navigation_frontpage($navigation, $course, $context) {
     if (isloggedin() && !isguestuser() && \report_coursepulse\local\overview::categories()) {
         $navigation->add(get_string('overview', 'report_coursepulse'),
-            new moodle_url('/report/coursepulse/overview.php'), navigation_node::TYPE_SETTING,
+            new moodle_url('/report/coursepulse/overview.php'), report_coursepulse_navigation_setting_type(),
             null, 'coursepulseoverview', new pix_icon('i/report', ''));
     }
+}
+
+/** Navigation classes moved into a namespace; retain Moodle 5.0 compatibility. */
+function report_coursepulse_navigation_setting_type(): int {
+    return class_exists(\core\navigation\navigation_node::class) ?
+        \core\navigation\navigation_node::TYPE_SETTING : \navigation_node::TYPE_SETTING;
 }
